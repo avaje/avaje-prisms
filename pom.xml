@@ -13,11 +13,7 @@
 	<name>avaje-prisms</name>
 	<description>A modular fork of hickory</description>
 	<properties>
-		<java.release>19</java.release>
-		<avaje.inject.version>8.12-RC5</avaje.inject.version>
 		<avaje.jsonb.version>1.2-RC2</avaje.jsonb.version>
-		<avaje.http.version>1.23</avaje.http.version>
-		<javalin.version>5.3.1</javalin.version>
 	</properties>
 	<dependencies>
 		<dependency>
