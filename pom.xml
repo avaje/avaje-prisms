@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.avaje</groupId>
@@ -9,12 +7,13 @@
 	</parent>
 	<groupId>io.avaje</groupId>
 	<artifactId>avaje-prisms</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>avaje-prisms</name>
 	<description>A modular fork of hickory</description>
 	<scm>
 		<developerConnection>scm:git:git@github.com:avaje/avaje-prisms.git</developerConnection>
-	</scm>
+	  <tag>avaje-prisms-1.0</tag>
+  </scm>
 	<properties>
 		<avaje.jsonb.version>1.2-RC2</avaje.jsonb.version>
 	</properties>
