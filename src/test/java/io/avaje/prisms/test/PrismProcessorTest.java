@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import io.avaje.prism.internal.PrismGenerator;
 
-public class PrismProcessorTest {
+class PrismProcessorTest {
 
   @AfterEach
   void deleteGeneratedFiles() throws IOException {
@@ -38,7 +38,7 @@ public class PrismProcessorTest {
   }
 
   @Test
-  public void runAnnotationProcessorJsonB() throws Exception {
+  void runAnnotationProcessor() throws Exception {
     final String source = Paths.get("src").toAbsolutePath().toString();
 
     final Iterable files = getSourceFiles(source);
