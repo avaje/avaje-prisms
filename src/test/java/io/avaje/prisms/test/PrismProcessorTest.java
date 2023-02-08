@@ -8,9 +8,9 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 
 import javax.tools.JavaCompiler;
@@ -47,8 +47,8 @@ class PrismProcessorTest {
 
     final CompilationTask task =
         compiler.getTask(
-            new PrintWriter(System.out), null, null, List.of("--release=11"), null, files);
-    task.setProcessors(List.of(new PrismGenerator()));
+            new PrintWriter(System.out), null, null, Arrays.asList(), null, files);
+    task.setProcessors(Arrays.asList(new PrismGenerator()));
 
     assertThat(task.call()).isTrue();
   }
@@ -57,7 +57,7 @@ class PrismProcessorTest {
     final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     final StandardJavaFileManager files = compiler.getStandardFileManager(null, null, null);
 
-    files.setLocation(StandardLocation.SOURCE_PATH, List.of(new File(source)));
+    files.setLocation(StandardLocation.SOURCE_PATH, Arrays.asList(new File(source)));
 
     final Set<Kind> fileKinds = Collections.singleton(Kind.SOURCE);
     return files.list(StandardLocation.SOURCE_PATH, "", fileKinds, true);
