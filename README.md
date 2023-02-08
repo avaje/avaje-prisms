@@ -31,7 +31,7 @@ package org.example
 ```java
  void someFunction(Element element) {
     
-MyExampleAnnotationPrism exampleAnnotation= MyExampleAnnotationPrism.getInstanceOn(element);
+MyExampleAnnotationPrism exampleAnnotation = MyExampleAnnotationPrism.getInstanceOn(element);
   exampleAnnotation.getValue()
   //can call the annotation methods like the annotation was actually present.
   ...
