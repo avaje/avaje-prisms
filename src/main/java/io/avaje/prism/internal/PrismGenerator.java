@@ -310,10 +310,10 @@ public final class PrismGenerator extends AbstractProcessor {
     out.format("%s    private %s(AnnotationMirror mirror) {%n", indent, name);
     out.print(
         "        for(ExecutableElement key : mirror.getElementValues().keySet()) {\n"
-            + "            memberValues.put(key.getSimpleName().toString(),mirror.getElementValues().get(key));\n"
+            + "            memberValues.put(key.getSimpleName().toString(), mirror.getElementValues().get(key));\n"
             + "        }\n"
             + "        for(ExecutableElement member : ElementFilter.methodsIn(mirror.getAnnotationType().asElement().getEnclosedElements())) {\n"
-            + "            defaults.put(member.getSimpleName().toString(),member.getDefaultValue());\n"
+            + "            defaults.put(member.getSimpleName().toString(), member.getDefaultValue());\n"
             + "        }\n");
     for (final PrismWriter w : writers) {
       w.writeInitializer(indent, out);
