@@ -83,13 +83,10 @@ import javax.tools.Diagnostic;
 public final class PrismGenerator extends AbstractProcessor {
 
   private final Map<String, TypeMirror> generated = new HashMap<>();
-
-  Deque<DeclaredType> inners = new ArrayDeque<>();
-
-  Set<DeclaredType> seenInners = new HashSet<>();
+  private final Deque<DeclaredType> inners = new ArrayDeque<>();
+  private final Set<DeclaredType> seenInners = new HashSet<>();
 
   private Elements elements;
-
   private Types types;
 
   @Override
