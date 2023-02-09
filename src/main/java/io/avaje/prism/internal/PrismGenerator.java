@@ -245,7 +245,12 @@ public final class PrismGenerator extends AbstractProcessor {
     for (final PrismWriter w : writers) {
       w.writeField(indent, out);
     }
+
     final String annName = ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
+
+    out.format(
+        "%s    private static final String PRISM_ANNOTATION_TYPE = \"%s\";%n%n",
+        indent, ((TypeElement) (typeMirror.asElement())).getQualifiedName());
     out.format("%s    /**%n", indent);
     out.format("%s      * An instance of the Values inner class whose%n", indent);
     out.format(
@@ -268,9 +273,7 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("%s      * is returned.%n", indent);
       out.format("%s      */%n", indent);
       out.format("%s    %sstatic %s getInstanceOn(Element e) {%n", indent, access, name);
-      out.format(
-          "%s        AnnotationMirror m = getMirror(\"%s\",e);%n",
-          indent, ((TypeElement) (typeMirror.asElement())).getQualifiedName());
+      out.format("%s        AnnotationMirror m = getMirror(PRISM_ANNOTATION_TYPE, e);%n", indent);
       out.format("%s        if(m == null) return null;%n", indent);
       out.format("%s        return getInstance(m);%n", indent);
       out.format("%s   }%n%n", indent);
@@ -278,10 +281,11 @@ public final class PrismGenerator extends AbstractProcessor {
     out.format(
         "%s    /** Return a prism of the {@code @%s} annotation whose mirror is mirror. %n",
         indent, annName);
-    out.format("%s      */%n", indent);
+    out.format("%s      */%n%n", indent);
     out.format(
         "%s    %sstatic %s getInstance(AnnotationMirror mirror) {%n",
         indent, inner ? "private " : access, name);
+    out.format("%s        if(!PRISM_ANNOTATION_TYPE.equals(mirror.getAnnotationType().toString())) return null;%n%n", indent, name);
     out.format("%s        return new %s(mirror);%n", indent, name);
     out.format("%s    }%n%n", indent);
     // write constructor
@@ -442,7 +446,7 @@ public final class PrismGenerator extends AbstractProcessor {
             + "        AnnotationValue av = memberValues.get(name);\n"
             + "        if(av == null) av = defaults.get(name);\n"
             + "        if(av == null) {\n"
-            + "            return null;\n"
+            + "            return java.util.Collections.EMPTY_LIST;\n"
             + "        }\n"
             + "        if(av.getValue() instanceof List) {\n"
             + "            List<T> result = new ArrayList<T>();\n"
@@ -450,12 +454,12 @@ public final class PrismGenerator extends AbstractProcessor {
             + "                if(clazz.isInstance(v.getValue())) {\n"
             + "                    result.add(clazz.cast(v.getValue()));\n"
             + "                } else{\n"
-            + "                    return null;\n"
+            + "                    return java.util.Collections.EMPTY_LIST;\n"
             + "                }\n"
             + "            }\n"
             + "            return result;\n"
             + "        } else {\n"
-            + "            return null;\n"
+            + "            return java.util.Collections.EMPTY_LIST;\n"
             + "        }\n"
             + "    }\n"
             + "    @SuppressWarnings(\"unchecked\")\n"
