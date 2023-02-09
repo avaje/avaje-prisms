@@ -1,6 +1,6 @@
 # Avaje Prisms
 
-Fork of the legendary [hickory annotation processer](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html).It has served well since 2007, but but doesn't have module support, and isn't likely to recieve it. This fork upgrades from java 6 to 11, and adds a module-info and other enhancements.
+Fork of the legendary [hickory annotation processer](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). It has served well since 2007, but but doesn't have module support, and isn't likely to recieve it. This fork upgrades from java 6 to 11, and adds a module-info and other enhancements.
 
 A lot of folks are not aware of this, but you should almost never use the actual annotation classes in an annotation processor, even your own.
 
