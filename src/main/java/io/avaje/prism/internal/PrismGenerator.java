@@ -38,14 +38,19 @@ package io.avaje.prism.internal;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
@@ -77,12 +82,27 @@ import javax.tools.Diagnostic;
 @SupportedAnnotationTypes({"io.avaje.prism.GeneratePrism", "io.avaje.prism.GeneratePrisms"})
 public final class PrismGenerator extends AbstractProcessor {
 
+  private final Map<String, TypeMirror> generated = new HashMap<>();
+
+  Deque<DeclaredType> inners = new ArrayDeque<>();
+
+  Set<DeclaredType> seenInners = new HashSet<>();
+
+  private Elements elements;
+
+  private Types types;
+
+  @Override
+  public synchronized void init(ProcessingEnvironment env) {
+    super.init(env);
+    this.elements = env.getElementUtils();
+    this.types = env.getTypeUtils();
+  }
+
   @Override
   public SourceVersion getSupportedSourceVersion() {
     return SourceVersion.latest();
   }
-
-  private final Map<String, TypeMirror> generated = new HashMap<>();
 
   @Override
   public boolean process(Set<? extends TypeElement> tes, RoundEnvironment renv) {
@@ -90,10 +110,8 @@ public final class PrismGenerator extends AbstractProcessor {
       return true;
     }
 
-    final TypeElement a =
-        processingEnv.getElementUtils().getTypeElement("io.avaje.prism.GeneratePrism");
-    final TypeElement as =
-        processingEnv.getElementUtils().getTypeElement("io.avaje.prism.GeneratePrisms");
+    final TypeElement a = elements.getTypeElement("io.avaje.prism.GeneratePrism");
+    final TypeElement as = elements.getTypeElement("io.avaje.prism.GeneratePrisms");
 
     for (final Element e : renv.getElementsAnnotatedWith(a)) {
       final GeneratePrismPrism ann = GeneratePrismPrism.getInstanceOn(e);
@@ -172,6 +190,7 @@ public final class PrismGenerator extends AbstractProcessor {
       String access,
       Map<DeclaredType, String> otherPrisms) {
     inners.clear();
+    seenInners.clear();
     final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
     PrintWriter out = null;
     try {
@@ -206,10 +225,9 @@ public final class PrismGenerator extends AbstractProcessor {
 
       // SHOULD make public only if the anotation says so, package by default.
       generateClassBody("", out, name, name, typeMirror, access, otherPrisms);
-
-      // recurse for inner prisms!!
-      for (final DeclaredType next : inners) {
-        final String innerName = next.asElement().getSimpleName().toString();
+      while (inners.peek() != null) {
+        final DeclaredType next = inners.remove();
+        final String innerName = next.asElement().getSimpleName().toString() + "Prism";
         ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
         out.format("    %sstatic class %s {%n", access, innerName);
         generateClassBody("    ", out, name, innerName, next, access, otherPrisms);
@@ -226,8 +244,6 @@ public final class PrismGenerator extends AbstractProcessor {
             Diagnostic.Kind.NOTE,
             String.format("Generated prism %s for @%s", prismFqn, typeMirror));
   }
-
-  List<DeclaredType> inners = new ArrayList<>();
 
   private void generateClassBody(
       final String indent,
@@ -249,7 +265,7 @@ public final class PrismGenerator extends AbstractProcessor {
     final String annName = ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
 
     out.format(
-        "%s    private static final String PRISM_ANNOTATION_TYPE = \"%s\";%n%n",
+        "%s    public static final String PRISM_TYPE = \"%s\";%n%n",
         indent, ((TypeElement) (typeMirror.asElement())).getQualifiedName());
     out.format("%s    /**%n", indent);
     out.format("%s      * An instance of the Values inner class whose%n", indent);
@@ -273,7 +289,7 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("%s      * is returned.%n", indent);
       out.format("%s      */%n", indent);
       out.format("%s    %sstatic %s getInstanceOn(Element e) {%n", indent, access, name);
-      out.format("%s        AnnotationMirror m = getMirror(PRISM_ANNOTATION_TYPE, e);%n", indent);
+      out.format("%s        AnnotationMirror m = getMirror(PRISM_TYPE, e);%n", indent);
       out.format("%s        if(m == null) return null;%n", indent);
       out.format("%s        return getInstance(m);%n", indent);
       out.format("%s   }%n%n", indent);
@@ -281,11 +297,13 @@ public final class PrismGenerator extends AbstractProcessor {
     out.format(
         "%s    /** Return a prism of the {@code @%s} annotation whose mirror is mirror. %n",
         indent, annName);
-    out.format("%s      */%n%n", indent);
+    out.format("%s      */%n", indent);
     out.format(
         "%s    %sstatic %s getInstance(AnnotationMirror mirror) {%n",
         indent, inner ? "private " : access, name);
-    out.format("%s        if(mirror == null || !PRISM_ANNOTATION_TYPE.equals(mirror.getAnnotationType().toString())) return null;%n%n", indent, name);
+    out.format(
+        "%s        if(mirror == null || !PRISM_TYPE.equals(mirror.getAnnotationType().toString())) return null;%n%n",
+        indent, name);
     out.format("%s        return new %s(mirror);%n", indent, name);
     out.format("%s    }%n%n", indent);
     // write constructor
@@ -361,8 +379,7 @@ public final class PrismGenerator extends AbstractProcessor {
 
   private PrismWriter getWriter(
       ExecutableElement m, String access, Map<DeclaredType, String> otherPrisms) {
-    final Elements elements = processingEnv.getElementUtils();
-    final Types types = processingEnv.getTypeUtils();
+
     final WildcardType q = types.getWildcardType(null, null);
     final TypeMirror enumType = types.getDeclaredType(elements.getTypeElement("java.lang.Enum"), q);
     TypeMirror typem = m.getReturnType();
@@ -398,9 +415,9 @@ public final class PrismGenerator extends AbstractProcessor {
         result.setMirrorType("AnnotationMirror");
         final DeclaredType annType = type;
         String prismName = null;
-        for (final DeclaredType other : otherPrisms.keySet()) {
-          if (types.isSameType(other, annType)) {
-            prismName = otherPrisms.get(other);
+        for (final Entry<DeclaredType, String> entry : otherPrisms.entrySet()) {
+          if (types.isSameType(entry.getKey(), annType)) {
+            prismName = entry.getValue();
             break;
           }
         }
@@ -409,11 +426,11 @@ public final class PrismGenerator extends AbstractProcessor {
           result.setM2pFormat(prismName + ".getInstance(%s)");
         } else {
           // generate its prism as inner class
-          final String prismType = annType.asElement().getSimpleName().toString();
+          final String prismType = annType.asElement().getSimpleName().toString()+"Prism";
           result.setPrismType(prismType);
           result.setM2pFormat(prismType + ".getInstance(%s)");
           // force generation of inner prism class for annotation
-          if (!inners.contains(type)) {
+          if (seenInners.add(type)) {
             inners.add(type);
           }
         }

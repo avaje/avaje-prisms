@@ -46,8 +46,7 @@ class PrismProcessorTest {
     final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
     final CompilationTask task =
-        compiler.getTask(
-            new PrintWriter(System.out), null, null, Arrays.asList(), null, files);
+        compiler.getTask(new PrintWriter(System.out), null, null, Arrays.asList(), null, files);
     task.setProcessors(Arrays.asList(new PrismGenerator()));
 
     assertThat(task.call()).isTrue();
