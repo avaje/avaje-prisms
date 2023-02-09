@@ -9,7 +9,7 @@
 	<artifactId>avaje-prisms-parent</artifactId>
 	<version>1.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>avaje-prisms</name>
+	<name>avaje-prisms-parent</name>
 	<description>A modular fork of hickory</description>
 	<scm>
 		<developerConnection>scm:git:git@github.com:avaje/avaje-prisms.git</developerConnection>
