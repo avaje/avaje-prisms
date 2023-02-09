@@ -59,22 +59,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<configuration>
-							<archive>
-								<manifestEntries>
-									<Automatic-Module-Name>io.avaje.prism</Automatic-Module-Name>
-								</manifestEntries>
-							</archive>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 </project>
