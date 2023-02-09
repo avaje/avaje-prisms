@@ -1,8 +1,8 @@
 # Avaje Prisms
 
-Fork of the [hickory annotation processer](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). Upgrades from java 6 to 8, and adds an Automatic-Module-Name.
+Fork of the [hickory annotation processer](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). Upgrades from java 6 to 8, adds an Automatic-Module-Name for Modular use, and adds other enhancements.
 
-A lot of folks are not aware of this but you should almost never use the actual annotation classes in an annotation processor, even your own.
+A lot of folks are not aware of this, but you should almost never use the actual annotation classes in an annotation processor, even your own.
 
 Why is it problematic? An annotation processor is not guaranteed to have classes loaded, if your annotation references other classes (e.g. has a Class<?> parameter) that are not yours you will have issues, *especially* if you are dealing with modularized projects.
 
@@ -27,7 +27,7 @@ package org.example
 ```
 
 
-#### 3. Use the Genrated Prism Class
+#### 3. Use the Generated Prism Class
 
 ```java
  void someFunction(Element element) {
