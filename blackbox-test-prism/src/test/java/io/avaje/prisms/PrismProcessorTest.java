@@ -1,4 +1,4 @@
-package io.avaje.prisms.test;
+package io.avaje.prisms;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,11 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 
-import javax.tools.JavaCompiler;
-import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
-import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
@@ -39,23 +36,23 @@ class PrismProcessorTest {
 
   @Test
   void runAnnotationProcessor() throws Exception {
-    final String source = Paths.get("src").toAbsolutePath().toString();
+    final var source = Paths.get("src").toAbsolutePath().toString();
 
     final Iterable files = getSourceFiles(source);
 
-    final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+    final var compiler = ToolProvider.getSystemJavaCompiler();
 
-    final CompilationTask task =
-        compiler.getTask(
-            new PrintWriter(System.out), null, null, Arrays.asList(), null, files);
+    final var task =
+        compiler.getTask(new PrintWriter(System.out), null, null, Arrays.asList(), null, files);
     task.setProcessors(Arrays.asList(new PrismGenerator()));
 
     assertThat(task.call()).isTrue();
+    assert OpenAPIDefinitionPrism.PRISM_TYPE != null;
   }
 
   private Iterable<JavaFileObject> getSourceFiles(String source) throws Exception {
-    final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-    final StandardJavaFileManager files = compiler.getStandardFileManager(null, null, null);
+    final var compiler = ToolProvider.getSystemJavaCompiler();
+    final var files = compiler.getStandardFileManager(null, null, null);
 
     files.setLocation(StandardLocation.SOURCE_PATH, Arrays.asList(new File(source)));
 

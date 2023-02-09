@@ -52,10 +52,10 @@ class PrismWriter {
     if (arrayed) {
       if (mirrorType.equals(prismType)) {
         out.format(
-            "%s        _%s = getArrayValues(\"%s\",%s.class);%n", indent, name, name, prismType);
+            "%s        _%s = getArrayValues(\"%s\", %s.class);%n", indent, name, name, prismType);
       } else {
         out.format(
-            "%s        List<%s> %sMirrors = getArrayValues(\"%s\",%s.class);%n",
+            "%s        List<%s> %sMirrors = getArrayValues(\"%s\", %s.class);%n",
             indent, mirrorType, name, name, mirrorType);
         out.format(
             "%s         _%s = new ArrayList<%s>(%sMirrors.size());%n",
@@ -65,10 +65,10 @@ class PrismWriter {
         out.format("%s        }%n", indent);
       }
     } else if (mirrorType.equals(prismType)) {
-      out.format("%s        _%s = getValue(\"%s\",%s.class);%n", indent, name, name, prismType);
+      out.format("%s        _%s = getValue(\"%s\", %s.class);%n", indent, name, name, prismType);
     } else {
       out.format(
-          "%s        %s %sMirror = getValue(\"%s\",%s.class);%n",
+          "%s        %s %sMirror = getValue(\"%s\", %s.class);%n",
           indent, mirrorType, name, name, mirrorType);
       out.format("%s        valid = valid && %sMirror != null;%n", indent, name);
       out.format(
