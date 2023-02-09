@@ -285,7 +285,7 @@ public final class PrismGenerator extends AbstractProcessor {
     out.format(
         "%s    %sstatic %s getInstance(AnnotationMirror mirror) {%n",
         indent, inner ? "private " : access, name);
-    out.format("%s        if(!PRISM_ANNOTATION_TYPE.equals(mirror.getAnnotationType().toString())) return null;%n%n", indent, name);
+    out.format("%s        if(mirror == null || !PRISM_ANNOTATION_TYPE.equals(mirror.getAnnotationType().toString())) return null;%n%n", indent, name);
     out.format("%s        return new %s(mirror);%n", indent, name);
     out.format("%s    }%n%n", indent);
     // write constructor
