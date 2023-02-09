@@ -36,10 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package io.avaje.prism;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Generates a Prism for the specified annotation, in the same package as the target.
@@ -49,6 +46,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.PACKAGE, ElementType.TYPE})
 @Retention(RetentionPolicy.SOURCE)
+@Repeatable(GeneratePrisms.class)
 public @interface GeneratePrism {
 
   /** The annotation to generate a prism for. */
