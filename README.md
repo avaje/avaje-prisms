@@ -13,7 +13,7 @@ Why is it problematic? An annotation processor is not guaranteed to have classes
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
