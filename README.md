@@ -1,6 +1,6 @@
 # Avaje Prisms
 
-Fork of the [hickory annotation processer](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). Upgrades from java 6 to 8, adds an Automatic-Module-Name for Modular use, and adds other enhancements.
+Fork of the [hickory annotation processer](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). Upgrades from java 6 to 11, adds an Automatic-Module-Name for Modular use, and adds other enhancements.
 
 A lot of folks are not aware of this, but you should almost never use the actual annotation classes in an annotation processor, even your own.
 
