@@ -12,8 +12,8 @@
 	<description>A modular fork of hickory</description>
 	<scm>
 		<developerConnection>scm:git:git@github.com:avaje/avaje-prisms.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 	<properties>
 		<avaje.jsonb.version>1.2-RC2</avaje.jsonb.version>
 	</properties>
