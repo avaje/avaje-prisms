@@ -13,7 +13,7 @@ Why is it problematic? An annotation processor is not guaranteed to have classes
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
-      <version>1.1</version>
+      <version>1.2</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
@@ -27,16 +27,17 @@ package org.example
 ```
 
 
-#### 3. Use the Genrated Prism Classes
-
-
+#### 3. Use the Genrated Prism Class
 
 ```java
  void someFunction(Element element) {
     
 MyExampleAnnotationPrism exampleAnnotation = MyExampleAnnotationPrism.getInstanceOn(element);
-  exampleAnnotation.getValue()
-  //can call the annotation methods like the annotation was actually present.
+//can get the original annotation type as a string
+String annotationQualifiedType = MyExampleAnnotationPrism.PRISM_TYPE
+
+//can call the annotation methods as if the annotation was actually present on the classpath.
+exampleAnnotation.getValue()
   ...
     }
 ```
