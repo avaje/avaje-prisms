@@ -116,7 +116,7 @@ public final class PrismGenerator extends AbstractProcessor {
     for (final Element e : renv.getElementsAnnotatedWith(a)) {
       final GeneratePrismPrism ann = GeneratePrismPrism.getInstanceOn(e);
       if (ann.isValid) {
-        generateIfNew(ann, e, Collections.<DeclaredType, String>emptyMap());
+        generateIfNew(ann, e, Map.of());
       }
     }
     for (final Element e : renv.getElementsAnnotatedWith(as)) {
@@ -426,7 +426,7 @@ public final class PrismGenerator extends AbstractProcessor {
           result.setM2pFormat(prismName + ".getInstance(%s)");
         } else {
           // generate its prism as inner class
-          final String prismType = annType.asElement().getSimpleName().toString()+"Prism";
+          final String prismType = annType.asElement().getSimpleName().toString() + "Prism";
           result.setPrismType(prismType);
           result.setM2pFormat(prismType + ".getInstance(%s)");
           // force generation of inner prism class for annotation
@@ -463,7 +463,7 @@ public final class PrismGenerator extends AbstractProcessor {
             + "        AnnotationValue av = memberValues.get(name);\n"
             + "        if(av == null) av = defaults.get(name);\n"
             + "        if(av == null) {\n"
-            + "            return java.util.Collections.EMPTY_LIST;\n"
+            + "            return java.util.List.of();\n"
             + "        }\n"
             + "        if(av.getValue() instanceof List) {\n"
             + "            List<T> result = new ArrayList<T>();\n"
@@ -471,12 +471,12 @@ public final class PrismGenerator extends AbstractProcessor {
             + "                if(clazz.isInstance(v.getValue())) {\n"
             + "                    result.add(clazz.cast(v.getValue()));\n"
             + "                } else{\n"
-            + "                    return java.util.Collections.EMPTY_LIST;\n"
+            + "                    return java.util.List.of();\n"
             + "                }\n"
             + "            }\n"
             + "            return result;\n"
             + "        } else {\n"
-            + "            return java.util.Collections.EMPTY_LIST;\n"
+            + "            return java.util.List.of();\n"
             + "        }\n"
             + "    }\n"
             + "    @SuppressWarnings(\"unchecked\")\n"

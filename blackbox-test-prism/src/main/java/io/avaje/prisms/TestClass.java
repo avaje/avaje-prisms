@@ -1,4 +1,4 @@
-package io.avaje.prisms.test;
+package io.avaje.prisms;
 
 import io.avaje.prism.GeneratePrism;
 
@@ -17,7 +17,9 @@ import io.avaje.prism.GeneratePrism;
   @GeneratePrism(value = io.avaje.jsonb.Json.Value.class),
   @GeneratePrism(value = io.avaje.jsonb.spi.MetaData.class),
   // test nested annotation generation
-  @GeneratePrism(value = io.swagger.v3.oas.annotations.OpenAPIDefinition.class, publicAccess = true),
+  @GeneratePrism(
+      value = io.swagger.v3.oas.annotations.OpenAPIDefinition.class,
+      publicAccess = true),
   @GeneratePrism(value = io.swagger.v3.oas.annotations.info.Info.class, name = "INfoefPrism"),
   @GeneratePrism(value = io.avaje.jsonb.spi.MetaData.Factory.class),
 })
