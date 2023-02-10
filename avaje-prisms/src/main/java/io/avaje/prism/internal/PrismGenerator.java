@@ -204,6 +204,7 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("import static java.util.stream.Collectors.*;%n");
       out.format("import java.util.ArrayList;%n");
       out.format("import java.util.List;%n");
+      out.format("import java.util.Optional;%n");
       out.format("import java.util.Map;%n");
       out.format("import javax.lang.model.element.AnnotationMirror;%n");
       out.format("import javax.lang.model.element.Element;%n");
@@ -273,9 +274,11 @@ public final class PrismGenerator extends AbstractProcessor {
     out.format("%s      */%n", indent);
 
     out.format("%s    %sfinal Values values;\n", indent, access);
-    final boolean inner = !"".equals(indent);
+    final var inner = !"".equals(indent);
+
     // write factory methods
     if (!inner) {
+
       // get single instance
       out.format(
           "%s    /** Return a prism representing the {@code @%s} annotation on 'e'. %n",
@@ -292,7 +295,8 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("%s        if(m == null) return null;%n", indent);
       out.format("%s        return getInstance(m);%n", indent);
       out.format("%s   }%n%n", indent);
-      // multiple instances
+
+      // get  multiple instances
       out.format(
           "%s    /** Return a list of prisms representing the {@code @%s} annotation on 'e'. %n",
           indent, annName);
@@ -305,10 +309,27 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("%s      * is returned.%n", indent);
       out.format("%s      */%n", indent);
       out.format("%s    %sstatic List<%s> getAllInstancesOn(Element e) {%n", indent, access, name);
-      out.format("%s        if(e == null) return List.of();%n", indent);
       out.format(
           "%s        return getMirrors(PRISM_TYPE, e).stream().map(%s::getInstance).collect(toList());%n",
           indent, name);
+      out.format("%s   }%n%n", indent);
+
+      // getOptional Instance
+      out.format(
+          "%s    /** Return a Optional representing a nullable {@code @%s} annotation on 'e'. %n",
+          indent, annName);
+      out.format(
+          "%s      * similar to {@code e.getAnnotation(%s.class)} except that %n", indent, annName);
+      out.format(
+          "%s      * an Optional of this class rather than an instance of {@code %s}%n",
+          indent, annName);
+      out.format("%s      * is returned.%n", indent);
+      out.format("%s      */%n", indent);
+      out.format(
+          "%s    %sstatic Optional<%s> getOptionalOn(Element e) {%n", indent, access, name);
+      out.format("%s        AnnotationMirror m = getMirror(PRISM_TYPE, e);%n", indent);
+      out.format("%s        if(m == null) return Optional.empty();%n", indent);
+      out.format("%s        return getOptional(m);%n", indent);
       out.format("%s   }%n%n", indent);
     }
     out.format(
@@ -323,6 +344,26 @@ public final class PrismGenerator extends AbstractProcessor {
         indent, name);
     out.format("%s        return new %s(mirror);%n", indent, name);
     out.format("%s    }%n%n", indent);
+    // isPresent
+    out.format(
+        "%s    /** Return a {@code Optional<%s>} representing a {@code @%s} annotation mirror. %n",
+        indent, name, annName);
+    out.format(
+        "%s      * similar to {@code e.getAnnotation(%s.class)} except that %n", indent, annName);
+    out.format(
+        "%s      * an Optional of this class rather than an instance of {@code %s}%n",
+        indent, annName);
+    out.format("%s      * is returned.%n", indent);
+    out.format("%s      */%n", indent);
+    out.format(
+        "%s    %sstatic Optional<%s> getOptional(AnnotationMirror mirror) {%n",
+        indent, inner ? "private " : access, name);
+    out.format(
+        "%s        if(mirror == null || !PRISM_TYPE.equals(mirror.getAnnotationType().toString())) return Optional.empty();%n%n",
+        indent, name);
+    out.format("%s        return Optional.of(new %s(mirror));%n", indent, name);
+    out.format("%s    }%n%n", indent);
+
     // write constructor
     out.format("%s    private %s(AnnotationMirror mirror) {%n", indent, name);
     out.print(
