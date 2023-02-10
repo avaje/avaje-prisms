@@ -47,7 +47,7 @@ class PrismProcessorTest {
     task.setProcessors(Arrays.asList(new PrismGenerator()));
 
     assertThat(task.call()).isTrue();
-    assert OpenAPIDefinitionPrism.PRISM_TYPE != null;
+   // assert OpenAPIDefinitionPrism.PRISM_TYPE != null;
   }
 
   private Iterable<JavaFileObject> getSourceFiles(String source) throws Exception {

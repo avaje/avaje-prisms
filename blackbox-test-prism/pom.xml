@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-prisms-parent</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>blackbox-test-prism</artifactId>
@@ -31,11 +31,6 @@
 			<groupId>io.avaje</groupId>
 			<artifactId>avaje-jsonb</artifactId>
 			<version>1.2-RC2</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>1</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.inject</groupId>

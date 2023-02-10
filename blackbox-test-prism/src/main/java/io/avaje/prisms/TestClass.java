@@ -12,7 +12,7 @@ import io.avaje.prism.GeneratePrism;
   @GeneratePrism(value = io.avaje.jsonb.Json.Raw.class)
   @GeneratePrism(value = io.avaje.jsonb.Json.SubTypes.class)
   @GeneratePrism(value = io.avaje.jsonb.Json.SubType.class)
-  @GeneratePrism(value = javax.inject.Inject.class, name = "javaxInjectPrism")
+ // @GeneratePrism(value = javax.inject.Inject.class, name = "javaxInjectPrism")
   @GeneratePrism(value = jakarta.inject.Inject.class, name = "jakartaInjectPrism")
   @GeneratePrism(value = io.avaje.jsonb.Json.Value.class)
   @GeneratePrism(value = io.avaje.jsonb.spi.MetaData.class)

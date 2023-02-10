@@ -201,6 +201,7 @@ public final class PrismGenerator extends AbstractProcessor {
       if (!"".equals(packageName)) {
         out.format("package %s;%n%n", packageName);
       }
+      out.format("import static java.util.stream.Collectors.*;%n");
       out.format("import java.util.ArrayList;%n");
       out.format("import java.util.List;%n");
       out.format("import java.util.Map;%n");
@@ -275,6 +276,7 @@ public final class PrismGenerator extends AbstractProcessor {
     final boolean inner = !"".equals(indent);
     // write factory methods
     if (!inner) {
+      // get single instance
       out.format(
           "%s    /** Return a prism representing the {@code @%s} annotation on 'e'. %n",
           indent, annName);
@@ -289,6 +291,24 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("%s        AnnotationMirror m = getMirror(PRISM_TYPE, e);%n", indent);
       out.format("%s        if(m == null) return null;%n", indent);
       out.format("%s        return getInstance(m);%n", indent);
+      out.format("%s   }%n%n", indent);
+      // multiple instances
+      out.format(
+          "%s    /** Return a list of prisms representing the {@code @%s} annotation on 'e'. %n",
+          indent, annName);
+      out.format(
+          "%s      * similar to {@code e.getAnnotationsByType(%s.class)} except that %n",
+          indent, annName);
+      out.format(
+          "%s      * instances of this class rather than instances of {@code %s}%n",
+          indent, annName);
+      out.format("%s      * is returned.%n", indent);
+      out.format("%s      */%n", indent);
+      out.format("%s    %sstatic List<%s> getAllInstancesOn(Element e) {%n", indent, access, name);
+      out.format("%s        if(e == null) return List.of();%n", indent);
+      out.format(
+          "%s        return getMirrors(PRISM_TYPE, e).stream().map(%s::getInstance).collect(toList());%n",
+          indent, name);
       out.format("%s   }%n%n", indent);
     }
     out.format(
@@ -441,11 +461,19 @@ public final class PrismGenerator extends AbstractProcessor {
   private void generateStaticMembers(PrintWriter out) {
     out.print(
         "    private static AnnotationMirror getMirror(String fqn, Element target) {\n"
-            + "        for (AnnotationMirror m :target.getAnnotationMirrors()) {\n"
-            + "            CharSequence mfqn = ((TypeElement)m.getAnnotationType().asElement()).getQualifiedName();\n"
+            + "        for (AnnotationMirror m : target.getAnnotationMirrors()) {\n"
+            + "            CharSequence mfqn = ((TypeElement) m.getAnnotationType().asElement()).getQualifiedName();\n"
             + "            if(fqn.contentEquals(mfqn)) return m;\n"
             + "        }\n"
             + "        return null;\n"
+            + "    }\n"
+            + "    private static List<AnnotationMirror> getMirrors(String fqn, Element target) {\n"
+            + "        var mirrors = new ArrayList<AnnotationMirror>();\n"
+            + "        for (AnnotationMirror m : target.getAnnotationMirrors()) {\n"
+            + "            CharSequence mfqn = ((TypeElement) m.getAnnotationType().asElement()).getQualifiedName();\n"
+            + "            if(fqn.contentEquals(mfqn)) mirrors.add(m);\n"
+            + "        }\n"
+            + "        return mirrors;\n"
             + "    }\n"
             + "    private static <T> T getValue(Map<String, AnnotationValue> memberValues, Map<String, AnnotationValue> defaults, String name, Class<T> clazz) {\n"
             + "        AnnotationValue av = memberValues.get(name);\n"
@@ -468,12 +496,12 @@ public final class PrismGenerator extends AbstractProcessor {
             + "                if(clazz.isInstance(v.getValue())) {\n"
             + "                    result.add(clazz.cast(v.getValue()));\n"
             + "                } else{\n"
-            + "                    return java.util.List.of();\n"
+            + "                    return List.of();\n"
             + "                }\n"
             + "            }\n"
             + "            return result;\n"
             + "        } else {\n"
-            + "            return java.util.List.of();\n"
+            + "            return List.of();\n"
             + "        }\n"
             + "    }\n"
             + "    @SuppressWarnings(\"unchecked\")\n"
