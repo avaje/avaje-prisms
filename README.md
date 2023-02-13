@@ -24,7 +24,25 @@ Why is it problematic? An annotation processor is not guaranteed to have classes
     </dependency>
 ```
 
-#### 2. `@GeneratePrism` targeting an annotation to a package-info.java/any class.
+#### 2. Replace `<compilerArgument>-proc:none</compilerArgument>` with this annotation processor
+
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration> 
+    <annotationProcessorPaths>
+      <path>
+          <groupId>io.avaje</groupId>
+          <artifactId>avaje-prisms</artifactId>
+          <version>1.3</version>
+      </path>
+    </annotationProcessorPaths>
+  </configuration>
+</plugin>
+```
+
+#### 3. `@GeneratePrism` targeting an annotation to a package-info.java/any class.
 
 ```java
 @GeneratePrism(MyExampleAnnotation.class)
@@ -32,7 +50,7 @@ package org.example
 ```
 
 
-#### 3. Use the Generated Prism Class
+#### 4. Use the Generated Prism Class
 
 ```java
  void someFunction(Element element) {
