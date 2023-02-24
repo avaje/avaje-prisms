@@ -278,6 +278,14 @@ public final class PrismGenerator extends AbstractProcessor {
 
     // write factory methods
     if (!inner) {
+      // Is Present
+      out.format(
+          "%s    /** Returns true if the prism annotation is present on the element, else false. */%n",
+          indent);
+      out.format("%s    %sstatic boolean isPresent(Element e) {%n", indent, access);
+      out.format("%s        return getInstanceOn(e) != null;%n", indent);
+      out.format("%s   }%n%n", indent);
+
       // get single instance
       out.format(
           "%s    /** Return a prism representing the {@code @%s} annotation on 'e'. %n",
@@ -363,14 +371,6 @@ public final class PrismGenerator extends AbstractProcessor {
     out.format("%s        return Optional.of(new %s(mirror));%n", indent, name);
     out.format("%s    }%n%n", indent);
     
-    // Is Present 
-    out.format(
-        "%s    /** Returns true if the prism annotation is present on the element, else false. */%n",
-        indent);
-    out.format("%s    %sstatic boolean isPresent(Element e) {%n", indent, access);
-    out.format("%s        return getInstanceOn(e) != null;%n", indent);
-    out.format("%s   }%n%n", indent);
-
     // write constructor
     out.format("%s    private %s(AnnotationMirror mirror) {%n", indent, name);
     out.print(
