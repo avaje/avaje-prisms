@@ -16,7 +16,8 @@ A lot of folks are not aware of this, but you should almost never use the actual
 - adds modular support via module.info
 - `@GeneratedPrism` is now Repeatable
 - Adds `getAllInstances` method to retrieve a list of prisms from an element
-- adds `Optional` factory methods  
+- Adds `isPresent` method to easily check if an element has the target annotation.
+- Adds `Optional` factory methods  
 - Exposes the fully qualified type of the target annotation as a string.
 - `getInstance` returns null instead of throwing exceptions when the provided mirror doesn't match the prism target
 - null annotation array values are returned as empty lists
