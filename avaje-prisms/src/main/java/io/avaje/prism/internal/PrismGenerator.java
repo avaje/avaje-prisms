@@ -282,8 +282,8 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format(
           "%s    /** Returns true if the prism annotation is present on the element, else false. */%n",
           indent);
-      out.format("%s    %sstatic boolean isPresent(Element e) {%n", indent, access);
-      out.format("%s        return getInstanceOn(e) != null;%n", indent);
+      out.format("%s    %sstatic boolean isPresent(Element element) {%n", indent, access);
+      out.format("%s        return getInstanceOn(element) != null;%n", indent);
       out.format("%s   }%n%n", indent);
 
       // get single instance
@@ -291,16 +291,16 @@ public final class PrismGenerator extends AbstractProcessor {
           "%s    /** Return a prism representing the {@code @%s} annotation on 'e'. %n",
           indent, annName);
       out.format(
-          "%s      * similar to {@code e.getAnnotation(%s.class)} except that %n", indent, annName);
+          "%s      * similar to {@code element.getAnnotation(%s.class)} except that %n", indent, annName);
       out.format(
           "%s      * an instance of this class rather than an instance of {@code %s}%n",
           indent, annName);
       out.format("%s      * is returned.%n", indent);
       out.format("%s      */%n", indent);
-      out.format("%s    %sstatic %s getInstanceOn(Element e) {%n", indent, access, name);
-      out.format("%s        AnnotationMirror m = getMirror(PRISM_TYPE, e);%n", indent);
-      out.format("%s        if(m == null) return null;%n", indent);
-      out.format("%s        return getInstance(m);%n", indent);
+      out.format("%s    %sstatic %s getInstanceOn(Element element) {%n", indent, access, name);
+      out.format("%s        AnnotationMirror mirror = getMirror(PRISM_TYPE, element);%n", indent);
+      out.format("%s        if(mirror == null) return null;%n", indent);
+      out.format("%s        return getInstance(mirror);%n", indent);
       out.format("%s   }%n%n", indent);
 
       // get multiple instances
@@ -315,9 +315,9 @@ public final class PrismGenerator extends AbstractProcessor {
           indent, annName);
       out.format("%s      * is returned.%n", indent);
       out.format("%s      */%n", indent);
-      out.format("%s    %sstatic List<%s> getAllInstancesOn(Element e) {%n", indent, access, name);
+      out.format("%s    %sstatic List<%s> getAllInstancesOn(Element element) {%n", indent, access, name);
       out.format(
-          "%s        return getMirrors(PRISM_TYPE, e).stream().map(%s::getInstance).collect(toList());%n",
+          "%s        return getMirrors(PRISM_TYPE, element).stream().map(%s::getInstance).collect(toList());%n",
           indent, name);
       out.format("%s   }%n%n", indent);
 
@@ -326,17 +326,17 @@ public final class PrismGenerator extends AbstractProcessor {
           "%s    /** Return a Optional representing a nullable {@code @%s} annotation on 'e'. %n",
           indent, annName);
       out.format(
-          "%s      * similar to {@code e.getAnnotation(%s.class)} except that %n", indent, annName);
+          "%s      * similar to {@code element.getAnnotation(%s.class)} except that %n", indent, annName);
       out.format(
           "%s      * an Optional of this class rather than an instance of {@code %s}%n",
           indent, annName);
       out.format("%s      * is returned.%n", indent);
       out.format("%s      */%n", indent);
       out.format(
-          "%s    %sstatic Optional<%s> getOptionalOn(Element e) {%n", indent, access, name);
-      out.format("%s        AnnotationMirror m = getMirror(PRISM_TYPE, e);%n", indent);
-      out.format("%s        if(m == null) return Optional.empty();%n", indent);
-      out.format("%s        return getOptional(m);%n", indent);
+          "%s    %sstatic Optional<%s> getOptionalOn(Element element) {%n", indent, access, name);
+      out.format("%s        AnnotationMirror mirror = getMirror(PRISM_TYPE, element);%n", indent);
+      out.format("%s        if(mirror == null) return Optional.empty();%n", indent);
+      out.format("%s        return getOptional(mirror);%n", indent);
       out.format("%s   }%n%n", indent);
     }
     out.format(
