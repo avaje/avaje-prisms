@@ -5,23 +5,36 @@
 
 # Avaje Prisms
 
-Fork of the legendary [hickory annotation processer](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). It has served well since 2007, but it doesn't have module support, and isn't likely to recieve it (last update was in 2010). 
-
-A lot of folks are not aware of this, but you should almost never use the actual annotation classes in an annotation processor, even your own. Why is it problematic? An annotation processor is not guaranteed to have classes loaded, you will likely run into issues depedending on how you build with your processor, *especially* if you are dealing with modularized projects.
-
+Fork of the legendary [hickory annotation processer](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). Hickory has served well since it was created in 2010, but it doesn't have module support, and isn't likely to recieve it. 
 
 ## Differences from Hickory
 
-- upgrades from JDK 6 to 11
-- adds modular support via module.info
-- `@GeneratedPrism` is now Repeatable
-- Adds `getAllInstances` method to retrieve a list of prisms from an element
-- Adds `isPresent` method to easily check if an element has the target annotation.
-- Adds `Optional` factory methods  
+- Upgrades from JDK 6 to 11
+- Adds modular support via module.info
+- `@GeneratedPrism` is now repeatable
+- Generates a `getAllInstances` method to retrieve a list of prisms from an element
+- Generates an `isPresent` method to easily check if an element has the target annotation.
+- Generates `Optional` factory methods  
 - Exposes the fully qualified type of the target annotation as a string.
 - `getInstance` returns null instead of throwing exceptions when the provided mirror doesn't match the prism target
 - null annotation array values are returned as empty lists
 
+## What's a Prism?
+
+When writing annotation processors the two conventional mechanisms to access the annotations are both awkward. `Element.getAnnotation()` can throw can throw Exceptions if the annotation being modelled is not semantically correct, and it can also fail to work on modular projects, (This is one the reasons why <annotationProcessorPaths> is required for modular projects but it is seriously limited and technically not correct either: [MCOMPILER-391](https://issues.apache.org/jira/browse/MCOMPILER-391) and [MCOMPILER-412](https://issues.apache.org/jira/browse/MCOMPILER-412), and the member methods on the returned `Annotation` can also throw Exceptions if the annotation being modelled is not semantically correct. Moreover when calling a member with a `Class` return type, you need to catch an exception to extract the `TypeMirror`.
+
+On the other hand, `AnnotationMirror` and `AnnotationValue` do a good job of modelling both correct and incorrect annotations, but provide no simple mechanism to determine whether it is correct or incorrect, and provide no convenient functionality to access the member values in a simple type specific way. While `AnnotationMirror` and `AnnotationValue` provide an ideal mechanism for dealing with unknown annotations, they are inconvenient for reading member values from known annotations.
+
+A Prism provides a solution to this problem by combining the advantages of the pure reflective model of `AnnotationMirror` and the runtime (real) model provided by Element.getAnnotation(), hence the term Prism to capture this idea of partial reflection.
+
+A prism has the same member methods as the annotation except that the return types are translated from runtime types to compile time types as follows...
+
+- Primitive members return their equivalent wrapper class in the prism.
+- Class members return a TypeMirror from the mirror API.
+- Enum members return a String being the name of the enum constant (because the constant value in the mirror API might not match those available in the runtime it cannot consistently return the appropriate enum).
+- String members return Strings.
+- Annotation members return a Prism of the annotation. If a prism for that annotation is generated from the same @GeneratePrisms annotation as the prism that uses it, then an instance of that prism will be returned. Otherwise a Prism for that annotation is supplied as an inner class of the dependant Prism. the name of which is the simple name of the referenced annotation type.
+- Array members return a List<X> where X is the appropriate prism mapping of the array component as above.
 
 ## How to use
 
@@ -54,14 +67,13 @@ A lot of folks are not aware of this, but you should almost never use the actual
 </plugin>
 ```
 
-#### 3. `@GeneratePrism` targeting an annotation to a package-info.java/any class.
+#### 3. Add `@GeneratePrism` targeting an annotation to a package-info.java/class.
 
 ```java
 // package-info.java
 @GeneratePrism(MyExampleAnnotation.class)
 package org.example
 ```
-
 
 #### 4. Use the Generated Prism Class
 
@@ -72,9 +84,12 @@ MyExampleAnnotationPrism exampleAnnotation = MyExampleAnnotationPrism.getInstanc
 //can get the original annotation type as a string
 String annotationQualifiedType = MyExampleAnnotationPrism.PRISM_TYPE
 
-//can call the annotation methods as if the annotation was actually present on the classpath.
+//can call the annotation methods as if the annotation was practically present on the classpath.
 exampleAnnotation.getValue()
   ...
     }
 ```
 
+## Related Works
+- [Pistachio](https://github.com/jstachio/pistachio)
+- [Mapstruct GemTools](https://github.com/mapstruct/tools-gem) ([Docs](https://mapstruct.org/news/2020-02-03-announcing-gem-tools/))
