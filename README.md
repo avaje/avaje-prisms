@@ -10,7 +10,7 @@ Fork of the legendary [hickory annotation processer](https://javadoc.io/static/c
 ## Differences from Hickory
 
 - Upgrades from JDK 6 to 11
-- Adds modular support via module.info
+- Adds modular support via module-info
 - `@GeneratedPrism` is now repeatable
 - Generates a `getAllInstances` method to retrieve a list of prisms from an element
 - Generates an `isPresent` method to easily check if an element has the target annotation.
@@ -21,7 +21,7 @@ Fork of the legendary [hickory annotation processer](https://javadoc.io/static/c
 
 ## What's a Prism?
 
-When writing annotation processors the two conventional mechanisms to access the annotations are both awkward. `Element.getAnnotation()` can throw can throw Exceptions if the annotation or its members are not semantically correct, and it can also fail to work on some modular projects. (This is one the reasons why `<annotationProcessorPaths>` is required for modular projects but it is seriously limited and technically not correct either: [MCOMPILER-391](https://issues.apache.org/jira/browse/MCOMPILER-391) and [MCOMPILER-412](https://issues.apache.org/jira/browse/MCOMPILER-412)) Moreover, when calling a member with a `Class` return type, you need to catch an exception to extract the `TypeMirror`.
+When writing annotation processors the two conventional mechanisms to access the annotations are both awkward. `Element.getAnnotation()` can throw Exceptions if the annotation or its members are not semantically correct, and it can also fail to work on some modular projects. (This is one the reasons why `<annotationProcessorPaths>` is required for modular projects but it is seriously limited and technically not correct either: [MCOMPILER-391](https://issues.apache.org/jira/browse/MCOMPILER-391) and [MCOMPILER-412](https://issues.apache.org/jira/browse/MCOMPILER-412)) Moreover, when calling a member with a `Class` return type, you need to catch an exception to extract the `TypeMirror`.
 
 On the other hand, `AnnotationMirror` and `AnnotationValue` do a good job of modelling both correct and incorrect annotations, but provide no simple mechanism to determine whether it is correct or incorrect, and provide no convenient functionality to access the member values in a simple type specific way. While `AnnotationMirror` and `AnnotationValue` provide an ideal mechanism for dealing with unknown annotations, they are inconvenient for reading member values from known annotations.
 
