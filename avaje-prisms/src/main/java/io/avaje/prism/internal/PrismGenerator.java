@@ -132,6 +132,12 @@ public final class PrismGenerator extends AbstractProcessor {
     return false;
   }
 
+  boolean isRepeatable(TypeMirror mirror) {
+
+  return RepeatablePrism.isPresent(types.asElement(mirror));
+
+  }
+
   private String getPrismName(GeneratePrismPrism ann) {
     String name = ann.name();
     if ("".equals(name)) {
@@ -303,23 +309,26 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("%s        return getInstance(mirror);%n", indent);
       out.format("%s   }%n%n", indent);
 
-      // get multiple instances
-      out.format(
-          "%s    /** Return a list of prisms representing the {@code @%s} annotation on 'e'. %n",
-          indent, annName);
-      out.format(
-          "%s      * similar to {@code e.getAnnotationsByType(%s.class)} except that %n",
-          indent, annName);
-      out.format(
-          "%s      * instances of this class rather than instances of {@code %s}%n",
-          indent, annName);
-      out.format("%s      * is returned.%n", indent);
-      out.format("%s      */%n", indent);
-      out.format("%s    %sstatic List<%s> getAllInstancesOn(Element element) {%n", indent, access, name);
-      out.format(
-          "%s        return getMirrors(PRISM_TYPE, element).stream().map(%s::getInstance).collect(toList());%n",
-          indent, name);
-      out.format("%s   }%n%n", indent);
+      if (isRepeatable(typeMirror)) {
+        // get multiple instances
+        out.format(
+            "%s    /** Return a list of prisms representing the {@code @%s} annotation on 'e'. %n",
+            indent, annName);
+        out.format(
+            "%s      * similar to {@code e.getAnnotationsByType(%s.class)} except that %n",
+            indent, annName);
+        out.format(
+            "%s      * instances of this class rather than instances of {@code %s}%n",
+            indent, annName);
+        out.format("%s      * is returned.%n", indent);
+        out.format("%s      */%n", indent);
+        out.format(
+            "%s    %sstatic List<%s> getAllInstancesOn(Element element) {%n", indent, access, name);
+        out.format(
+            "%s        return getMirrors(PRISM_TYPE, element).stream().map(%s::getInstance).collect(toList());%n",
+            indent, name);
+        out.format("%s   }%n%n", indent);
+      }
 
       // getOptionalOn
       out.format(
