@@ -43,7 +43,7 @@ A prism has the same member methods as the annotation except that the return typ
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
@@ -60,7 +60,7 @@ A prism has the same member methods as the annotation except that the return typ
       <path>
           <groupId>io.avaje</groupId>
           <artifactId>avaje-prisms</artifactId>
-          <version>1.4</version>
+          <version>1.5</version>
       </path>
     </annotationProcessorPaths>
   </configuration>
