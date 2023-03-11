@@ -15,6 +15,8 @@ Fork of the legendary [hickory annotation processer](https://javadoc.io/static/c
 - Generates a `getAllInstances` method to retrieve a list of prisms from an element
 - Generates an `isPresent` method to easily check if an element has the target annotation.
 - Generates `Optional` factory methods  
+- Generates a `getAllInstances` method to retrieve a list of prisms from an element
+- Generates a `getAllOnMetaAnnotations` method to retrieve a list of prisms from an element's annotations
 - Exposes the fully qualified type of the target annotation as a string.
 - `getInstance` returns null instead of throwing exceptions when the provided mirror doesn't match the prism target
 - null annotation array values are returned as empty lists
@@ -43,7 +45,7 @@ A prism has the same member methods as the annotation except that the return typ
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
-      <version>1.5</version>
+      <version>1.6</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
@@ -60,7 +62,7 @@ A prism has the same member methods as the annotation except that the return typ
       <path>
           <groupId>io.avaje</groupId>
           <artifactId>avaje-prisms</artifactId>
-          <version>1.5</version>
+          <version>1.6</version>
       </path>
     </annotationProcessorPaths>
   </configuration>
