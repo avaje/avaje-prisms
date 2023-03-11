@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,6 +93,7 @@ public final class PrismGenerator extends AbstractProcessor {
     super.init(env);
     this.elements = env.getElementUtils();
     this.types = env.getTypeUtils();
+    ProcessingContext.init(env);
   }
 
   @Override
@@ -130,12 +130,6 @@ public final class PrismGenerator extends AbstractProcessor {
       }
     }
     return false;
-  }
-
-  boolean isRepeatable(TypeMirror mirror) {
-
-  return RepeatablePrism.isPresent(types.asElement(mirror));
-
   }
 
   private String getPrismName(GeneratePrismPrism ann) {
@@ -229,13 +223,14 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("%sclass %s {%n", access, name);
 
       // SHOULD make public only if the anotation says so, package by default.
-      generateClassBody("", out, name, name, typeMirror, access, otherPrisms);
+      generateClassBody(new GenerateContext("", out, name, name, typeMirror, access), otherPrisms);
       while (inners.peek() != null) {
         final DeclaredType next = inners.remove();
         final String innerName = next.asElement().getSimpleName().toString() + "Prism";
         ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
         out.format("    %sstatic class %s {%n", access, innerName);
-        generateClassBody("    ", out, name, innerName, next, access, otherPrisms);
+        generateClassBody(
+            new GenerateContext("    ", out, name, innerName, next, access), otherPrisms);
         out.format("    }%n");
       }
       generateStaticMembers(out);
@@ -250,14 +245,15 @@ public final class PrismGenerator extends AbstractProcessor {
             String.format("Generated prism %s for @%s", prismFqn, typeMirror));
   }
 
-  private void generateClassBody(
-      final String indent,
-      final PrintWriter out,
-      final String outerName,
-      final String name,
-      final DeclaredType typeMirror,
-      String access,
-      Map<DeclaredType, String> otherPrisms) {
+  private void generateClassBody(final GenerateContext ctx, Map<DeclaredType, String> otherPrisms) {
+
+    final String indent = ctx.indent();
+    final PrintWriter out = ctx.out();
+    final String name = ctx.name();
+    final String outerName = ctx.outerName();
+    final DeclaredType typeMirror = ctx.typeMirror();
+    final String access = ctx.access();
+
     final List<PrismWriter> writers = new ArrayList<>();
     for (final ExecutableElement m :
         ElementFilter.methodsIn(typeMirror.asElement().getEnclosedElements())) {
@@ -269,6 +265,7 @@ public final class PrismGenerator extends AbstractProcessor {
 
     final String annName = ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
 
+    ctx.setAnnName(annName);
     out.format(
         "%s    public static final String PRISM_TYPE = \"%s\";%n%n",
         indent, ((TypeElement) (typeMirror.asElement())).getQualifiedName());
@@ -283,103 +280,9 @@ public final class PrismGenerator extends AbstractProcessor {
     final var inner = !"".equals(indent);
 
     // write factory methods
-    if (!inner) {
-      // Is Present
-      out.format(
-          "%s    /** Returns true if the prism annotation is present on the element, else false. */%n",
-          indent);
-      out.format("%s    %sstatic boolean isPresent(Element element) {%n", indent, access);
-      out.format("%s        return getInstanceOn(element) != null;%n", indent);
-      out.format("%s   }%n%n", indent);
 
-      // get single instance
-      out.format(
-          "%s    /** Return a prism representing the {@code @%s} annotation on 'e'. %n",
-          indent, annName);
-      out.format(
-          "%s      * similar to {@code element.getAnnotation(%s.class)} except that %n", indent, annName);
-      out.format(
-          "%s      * an instance of this class rather than an instance of {@code %s}%n",
-          indent, annName);
-      out.format("%s      * is returned.%n", indent);
-      out.format("%s      */%n", indent);
-      out.format("%s    %sstatic %s getInstanceOn(Element element) {%n", indent, access, name);
-      out.format("%s        AnnotationMirror mirror = getMirror(PRISM_TYPE, element);%n", indent);
-      out.format("%s        if(mirror == null) return null;%n", indent);
-      out.format("%s        return getInstance(mirror);%n", indent);
-      out.format("%s   }%n%n", indent);
+    new FactoryMethodWriter(ctx, inner).write();
 
-      if (isRepeatable(typeMirror)) {
-        // get multiple instances
-        out.format(
-            "%s    /** Return a list of prisms representing the {@code @%s} annotation on 'e'. %n",
-            indent, annName);
-        out.format(
-            "%s      * similar to {@code e.getAnnotationsByType(%s.class)} except that %n",
-            indent, annName);
-        out.format(
-            "%s      * instances of this class rather than instances of {@code %s}%n",
-            indent, annName);
-        out.format("%s      * is returned.%n", indent);
-        out.format("%s      */%n", indent);
-        out.format(
-            "%s    %sstatic List<%s> getAllInstancesOn(Element element) {%n", indent, access, name);
-        out.format(
-            "%s        return getMirrors(PRISM_TYPE, element).stream().map(%s::getInstance).collect(toList());%n",
-            indent, name);
-        out.format("%s   }%n%n", indent);
-      }
-
-      // getOptionalOn
-      out.format(
-          "%s    /** Return a Optional representing a nullable {@code @%s} annotation on 'e'. %n",
-          indent, annName);
-      out.format(
-          "%s      * similar to {@code element.getAnnotation(%s.class)} except that %n", indent, annName);
-      out.format(
-          "%s      * an Optional of this class rather than an instance of {@code %s}%n",
-          indent, annName);
-      out.format("%s      * is returned.%n", indent);
-      out.format("%s      */%n", indent);
-      out.format(
-          "%s    %sstatic Optional<%s> getOptionalOn(Element element) {%n", indent, access, name);
-      out.format("%s        AnnotationMirror mirror = getMirror(PRISM_TYPE, element);%n", indent);
-      out.format("%s        if(mirror == null) return Optional.empty();%n", indent);
-      out.format("%s        return getOptional(mirror);%n", indent);
-      out.format("%s   }%n%n", indent);
-    }
-    out.format(
-        "%s    /** Return a prism of the {@code @%s} annotation whose mirror is mirror. %n",
-        indent, annName);
-    out.format("%s      */%n", indent);
-    out.format(
-        "%s    %sstatic %s getInstance(AnnotationMirror mirror) {%n",
-        indent, inner ? "private " : access, name);
-    out.format(
-        "%s        if(mirror == null || !PRISM_TYPE.equals(mirror.getAnnotationType().toString())) return null;%n%n",
-        indent, name);
-    out.format("%s        return new %s(mirror);%n", indent, name);
-    out.format("%s    }%n%n", indent);
-    // getOptional
-    out.format(
-        "%s    /** Return a {@code Optional<%s>} representing a {@code @%s} annotation mirror. %n",
-        indent, name, annName);
-    out.format(
-        "%s      * similar to {@code e.getAnnotation(%s.class)} except that %n", indent, annName);
-    out.format(
-        "%s      * an Optional of this class rather than an instance of {@code %s}%n",
-        indent, annName);
-    out.format("%s      * is returned.%n", indent);
-    out.format("%s      */%n", indent);
-    out.format(
-        "%s    %sstatic Optional<%s> getOptional(AnnotationMirror mirror) {%n",
-        indent, inner ? "private " : access, name);
-    out.format(
-        "%s        if(mirror == null || !PRISM_TYPE.equals(mirror.getAnnotationType().toString())) return Optional.empty();%n%n",
-        indent, name);
-    out.format("%s        return Optional.of(new %s(mirror));%n", indent, name);
-    out.format("%s    }%n%n", indent);
-    
     // write constructor
     out.format("%s    private %s(AnnotationMirror mirror) {%n", indent, name);
     out.print(

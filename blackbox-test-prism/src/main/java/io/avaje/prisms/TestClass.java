@@ -1,5 +1,7 @@
 package io.avaje.prisms;
 
+import java.lang.annotation.Target;
+
 import io.avaje.prism.GeneratePrism;
 import io.avaje.prism.GeneratePrisms;
 
@@ -23,4 +25,5 @@ import io.avaje.prism.GeneratePrisms;
 @GeneratePrism(value = io.swagger.v3.oas.annotations.OpenAPIDefinition.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.info.Info.class, name = "INfoefPrism")
 @GeneratePrism(io.avaje.jsonb.spi.MetaData.Factory.class)
+@GeneratePrism(Target.class)
 public class TestClass {}
