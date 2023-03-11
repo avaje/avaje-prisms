@@ -1,7 +1,5 @@
 package io.avaje.prism.internal;
 
-import static io.avaje.prism.internal.ProcessingContext.asElement;
-
 import java.io.PrintWriter;
 
 import javax.lang.model.type.DeclaredType;
@@ -25,11 +23,8 @@ public class FactoryMethodWriter {
     this.access = ctx.access();
     this.annName = ctx.annName();
     this.inner = inner;
-    this.repeatable = RepeatablePrism.isPresent(asElement(typeMirror));
-
-    final var target = TargetPrism.getInstanceOn(asElement(typeMirror));
-
-    this.meta = target == null || target.value().contains("ANNOTATION_TYPE");
+    this.repeatable = Util.isRepeatable(typeMirror);
+    this.meta = Util.isMeta(typeMirror);
   }
 
   void write() {
@@ -37,8 +32,12 @@ public class FactoryMethodWriter {
       writeIsPresent();
       writeGetInstanceOn();
       writeGetOptionalOn();
+
       if (repeatable) {
         writeGetAllInstances();
+      }
+      if (meta) {
+        writeGetAllOnMeta();
       }
     }
     writeGetInstance();
@@ -94,6 +93,31 @@ public class FactoryMethodWriter {
     out.format("%s        AnnotationMirror mirror = getMirror(PRISM_TYPE, element);%n", indent);
     out.format("%s        if(mirror == null) return Optional.empty();%n", indent);
     out.format("%s        return getOptional(mirror);%n", indent);
+    out.format("%s   }%n%n", indent);
+  }
+
+  private void writeGetAllOnMeta() {
+
+    out.format("%s    /** Return a list of prisms representing the {@code @%s} meta annotation on all the annotations on the given element. %n", indent, annName);
+    out.format("%s      * this method will recursively search all the annotations on the element. %n",indent);
+    out.format("%s      */%n", indent);
+    out.format("%s    %sstatic List<%s> getAllOnMetaAnnotations(Element element) {%n",indent, access, name);
+    out.format("%s        if (element == null || element.getAnnotationMirrors().isEmpty()) return List.of();%n%n",indent);
+    out.format("%s        return getAllOnMetaAnnotations(element, new HashSet<>());%n", indent);
+    out.format("%s   }%n%n", indent);
+    //this will prevent a recursive loop
+    out.format("%s    private static List<%s> getAllOnMetaAnnotations(Element element, Set<String> seen) {%n",indent, name);
+    out.format("%s          if (element == null || element.getAnnotationMirrors().isEmpty()) return List.of();%n%n",indent);
+    out.format("%s        return element.getAnnotationMirrors().stream()%n", indent);
+    out.format("%s            .map(AnnotationMirror::getAnnotationType)%n", indent);
+    out.format("%s            .filter(t -> seen.add(t.toString()))%n", indent);
+    out.format("%s            .map(DeclaredType::asElement)%n", indent);
+    out.format("%s            .flatMap(%n", indent);
+    out.format("%s                e ->%n", indent);
+    out.format("%s                    Stream.concat(%n", indent);
+    out.format("%s                        getAllOnMetaAnnotations(e, seen).stream(),%n", indent);
+    out.format("%s                        getMirrors(PRISM_TYPE, element).stream().map(%s::getInstance)))%n",indent, name);
+    out.format("%s            .collect(toList());%n", indent);
     out.format("%s   }%n%n", indent);
   }
 

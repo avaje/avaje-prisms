@@ -38,6 +38,7 @@ package io.avaje.prism.internal;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -191,17 +192,26 @@ public final class PrismGenerator extends AbstractProcessor {
     final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
     PrintWriter out = null;
     try {
-      // out = new PrintWriter(processingEnv.getFiler().createSourceFile(prismFqn));
       out = new PrintWriter(processingEnv.getFiler().createSourceFile(prismFqn).openWriter());
     } catch (final IOException ex) {
-      ex.printStackTrace();
+      throw new UncheckedIOException(ex);
     }
     try {
 
       if (!"".equals(packageName)) {
         out.format("package %s;%n%n", packageName);
       }
-      out.format("import static java.util.stream.Collectors.*;%n");
+      final var isMeta = Util.isMeta(typeMirror);
+      if (Util.isRepeatable(typeMirror) || isMeta) {
+        out.format("import static java.util.stream.Collectors.*;%n");
+      }
+
+      if (isMeta) {
+        out.format("import java.util.stream.Stream;%n");
+        out.format("import javax.lang.model.type.DeclaredType;%n");
+        out.format("import java.util.Set;%n");
+        out.format("import java.util.HashSet;%n");
+      }
       out.format("import java.util.ArrayList;%n");
       out.format("import java.util.List;%n");
       out.format("import java.util.Optional;%n");
