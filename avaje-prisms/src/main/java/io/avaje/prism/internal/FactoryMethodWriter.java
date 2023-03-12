@@ -60,7 +60,7 @@ public class FactoryMethodWriter {
     out.format("%s      * is returned.%n", indent);
     out.format("%s      */%n", indent);
     out.format("%s    %sstatic %s getInstanceOn(Element element) {%n", indent, access, name);
-    out.format("%s        AnnotationMirror mirror = getMirror(PRISM_TYPE, element);%n", indent);
+    out.format("%s        AnnotationMirror mirror = getMirror(element);%n", indent);
     out.format("%s        if(mirror == null) return null;%n", indent);
     out.format("%s        return getInstance(mirror);%n", indent);
     out.format("%s   }%n%n", indent);
@@ -75,7 +75,7 @@ public class FactoryMethodWriter {
     out.format("%s      * is returned.%n", indent);
     out.format("%s      */%n", indent);
     out.format("%s    %sstatic Optional<%s> getOptionalOn(Element element) {%n", indent, access, name);
-    out.format("%s        AnnotationMirror mirror = getMirror(PRISM_TYPE, element);%n", indent);
+    out.format("%s        AnnotationMirror mirror = getMirror(element);%n", indent);
     out.format("%s        if(mirror == null) return Optional.empty();%n", indent);
     out.format("%s        return getOptional(mirror);%n", indent);
     out.format("%s   }%n%n", indent);
@@ -107,7 +107,7 @@ public class FactoryMethodWriter {
     out.format("%s                e ->%n", indent);
     out.format("%s                    Stream.concat(%n", indent);
     out.format("%s                        getAllOnMetaAnnotations(e, seen),%n", indent);
-    out.format("%s                        getMirrors(PRISM_TYPE, element).stream().map(%s::getInstance)));%n", indent, name);
+    out.format("%s                        getMirrors(element).map(%s::getInstance)));%n", indent, name);
     out.format("%s   }%n%n", indent);
   }
 
@@ -119,7 +119,9 @@ public class FactoryMethodWriter {
     out.format("%s      * is returned.%n", indent);
     out.format("%s      */%n", indent);
     out.format("%s    %sstatic List<%s> getAllInstancesOn(Element element) {%n", indent, access, name);
-    out.format("%s        return getMirrors(PRISM_TYPE, element).stream().map(%s::getInstance).collect(toList());%n", indent, name);
+    out.format("%s        return getMirrors(element)%n", indent);
+    out.format("%s            .map(%s::getInstance)%n", indent, name);
+    out.format("%s            .collect(toList());%n", indent);
     out.format("%s   }%n%n", indent);
   }
 

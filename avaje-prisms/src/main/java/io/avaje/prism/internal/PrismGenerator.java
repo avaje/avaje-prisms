@@ -204,10 +204,10 @@ public final class PrismGenerator extends AbstractProcessor {
       final var isMeta = Util.isMeta(typeMirror);
       if (Util.isRepeatable(typeMirror) || isMeta) {
         out.format("import static java.util.stream.Collectors.*;%n");
+        out.format("import java.util.stream.Stream;%n");
       }
 
       if (isMeta) {
-        out.format("import java.util.stream.Stream;%n");
         out.format("import javax.lang.model.type.DeclaredType;%n");
         out.format("import java.util.Set;%n");
         out.format("import java.util.HashSet;%n");
@@ -243,7 +243,7 @@ public final class PrismGenerator extends AbstractProcessor {
             new GenerateContext("    ", out, name, innerName, next, access), otherPrisms);
         out.format("    }%n");
       }
-      generateStaticMembers(out);
+      generateStaticMembers(out, Util.isMeta(typeMirror) || Util.isRepeatable(typeMirror));
       out.format("}%n");
     } finally {
       out.close();
@@ -428,24 +428,23 @@ public final class PrismGenerator extends AbstractProcessor {
     return result;
   }
 
-  private void generateStaticMembers(PrintWriter out) {
+  private void generateStaticMembers(PrintWriter out, boolean generateGetMirrors) {
     out.print(
-        "    private static AnnotationMirror getMirror(String fqn, Element target) {\n"
+        "    private static AnnotationMirror getMirror(Element target) {\n"
             + "        for (AnnotationMirror m : target.getAnnotationMirrors()) {\n"
             + "            CharSequence mfqn = ((TypeElement) m.getAnnotationType().asElement()).getQualifiedName();\n"
-            + "            if(fqn.contentEquals(mfqn)) return m;\n"
+            + "            if(PRISM_TYPE.contentEquals(mfqn)) return m;\n"
             + "        }\n"
             + "        return null;\n"
-            + "    }\n"
-            + "    private static List<AnnotationMirror> getMirrors(String fqn, Element target) {\n"
-            + "        var mirrors = new ArrayList<AnnotationMirror>();\n"
-            + "        for (AnnotationMirror m : target.getAnnotationMirrors()) {\n"
-            + "            CharSequence mfqn = ((TypeElement) m.getAnnotationType().asElement()).getQualifiedName();\n"
-            + "            if(fqn.contentEquals(mfqn)) mirrors.add(m);\n"
-            + "        }\n"
-            + "        return mirrors;\n"
-            + "    }\n"
-            + "    private static <T> T getValue(Map<String, AnnotationValue> memberValues, Map<String, AnnotationValue> defaults, String name, Class<T> clazz) {\n"
+            + "    }\n");
+    if (generateGetMirrors)
+      out.print(
+          "    private static Stream<? extends AnnotationMirror> getMirrors(Element target) {\n"
+              + "        return target.getAnnotationMirrors().stream()\n"
+              + "            .filter(\n"
+              + "                 m -> PRISM_TYPE.contentEquals(((TypeElement) m.getAnnotationType().asElement()).getQualifiedName()));\n"
+              + "    }\n");
+    out.print( "    private static <T> T getValue(Map<String, AnnotationValue> memberValues, Map<String, AnnotationValue> defaults, String name, Class<T> clazz) {\n"
             + "        AnnotationValue av = memberValues.get(name);\n"
             + "        if(av == null) av = defaults.get(name);\n"
             + "        if(av == null) {\n"
