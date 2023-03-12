@@ -244,7 +244,14 @@ public final class PrismGenerator extends AbstractProcessor {
             new GenerateContext("    ", out, name, innerName, next, access), otherPrisms);
         out.format("    }%n");
       }
-      generateStaticMembers(out, isRepeatable || isMeta);
+
+      final var methods = ElementFilter.methodsIn(typeMirror.asElement().getEnclosedElements());
+      final var methodsKinds =
+          methods.stream().map(ExecutableElement::getReturnType).map(TypeMirror::getKind);
+      final var writeArrayValue = methodsKinds.anyMatch(TypeKind.ARRAY::equals);
+      final var writeValue = !methods.isEmpty();
+
+      generateStaticMembers(out, isRepeatable || isMeta, writeValue, writeArrayValue);
       out.format("}%n");
     } finally {
       out.close();
@@ -265,9 +272,16 @@ public final class PrismGenerator extends AbstractProcessor {
     final DeclaredType typeMirror = ctx.typeMirror();
     final String access = ctx.access();
 
+    boolean writeArrayValue = false;
+    boolean writeValue = false;
+
     final List<PrismWriter> writers = new ArrayList<>();
     for (final ExecutableElement m :
         ElementFilter.methodsIn(typeMirror.asElement().getEnclosedElements())) {
+      if (m.getReturnType().getKind() == TypeKind.ARRAY) {
+        writeArrayValue = true;
+      }
+      writeValue = true;
       writers.add(getWriter(m, access, otherPrisms));
     }
     for (final PrismWriter w : writers) {
@@ -362,7 +376,7 @@ public final class PrismGenerator extends AbstractProcessor {
           indent, access, w.name, w.name);
     }
     out.format("%s    }%n", indent);
-    generateFixedClassContent(indent, out, outerName);
+    generateFixedClassContent(indent, out, outerName, writeValue, writeArrayValue);
   }
 
   private PrismWriter getWriter(
@@ -429,7 +443,8 @@ public final class PrismGenerator extends AbstractProcessor {
     return result;
   }
 
-  private void generateStaticMembers(PrintWriter out, boolean generateGetMirrors) {
+  private void generateStaticMembers(
+      PrintWriter out, boolean generateGetMirrors, boolean generateValue, boolean generateArray) {
     out.print(
         "    private static AnnotationMirror getMirror(Element target) {\n"
             + "        for (AnnotationMirror m : target.getAnnotationMirrors()) {\n"
@@ -445,42 +460,51 @@ public final class PrismGenerator extends AbstractProcessor {
               + "            .filter(\n"
               + "                 m -> PRISM_TYPE.contentEquals(((TypeElement) m.getAnnotationType().asElement()).getQualifiedName()));\n"
               + "    }\n");
-    out.print( "    private static <T> T getValue(Map<String, AnnotationValue> memberValues, Map<String, AnnotationValue> defaults, String name, Class<T> clazz) {\n"
-            + "        AnnotationValue av = memberValues.get(name);\n"
-            + "        if(av == null) av = defaults.get(name);\n"
-            + "        if(av == null) {\n"
-            + "            return null;\n"
-            + "        }\n"
-            + "        if(clazz.isInstance(av.getValue())) return clazz.cast(av.getValue());\n"
-            + "        return null;\n"
-            + "    }\n"
-            + "    private static <T> List<T> getArrayValues(Map<String, AnnotationValue> memberValues, Map<String, AnnotationValue> defaults, String name, final Class<T> clazz) {\n"
-            + "        AnnotationValue av = memberValues.get(name);\n"
-            + "        if(av == null) av = defaults.get(name);\n"
-            + "        if(av == null) {\n"
-            + "            return java.util.List.of();\n"
-            + "        }\n"
-            + "        if(av.getValue() instanceof List) {\n"
-            + "            List<T> result = new ArrayList<T>();\n"
-            + "            for(AnnotationValue v : getValueAsList(av)) {\n"
-            + "                if(clazz.isInstance(v.getValue())) {\n"
-            + "                    result.add(clazz.cast(v.getValue()));\n"
-            + "                } else{\n"
-            + "                    return List.of();\n"
-            + "                }\n"
-            + "            }\n"
-            + "            return result;\n"
-            + "        } else {\n"
-            + "            return List.of();\n"
-            + "        }\n"
-            + "    }\n"
-            + "    @SuppressWarnings(\"unchecked\")\n"
-            + "    private static List<AnnotationValue> getValueAsList(AnnotationValue av) {\n"
-            + "        return (List<AnnotationValue>)av.getValue();\n"
-            + "    }\n");
+    if (generateValue)
+      out.print(
+          "    private static <T> T getValue(Map<String, AnnotationValue> memberValues, Map<String, AnnotationValue> defaults, String name, Class<T> clazz) {\n"
+              + "        AnnotationValue av = memberValues.get(name);\n"
+              + "        if(av == null) av = defaults.get(name);\n"
+              + "        if(av == null) {\n"
+              + "            return null;\n"
+              + "        }\n"
+              + "        if(clazz.isInstance(av.getValue())) return clazz.cast(av.getValue());\n"
+              + "        return null;\n"
+              + "    }\n");
+    if (generateArray)
+      out.print(
+          "    private static <T> List<T> getArrayValues(Map<String, AnnotationValue> memberValues, Map<String, AnnotationValue> defaults, String name, final Class<T> clazz) {\n"
+              + "        AnnotationValue av = memberValues.get(name);\n"
+              + "        if(av == null) av = defaults.get(name);\n"
+              + "        if(av == null) {\n"
+              + "            return java.util.List.of();\n"
+              + "        }\n"
+              + "        if(av.getValue() instanceof List) {\n"
+              + "            List<T> result = new ArrayList<T>();\n"
+              + "            for(AnnotationValue v : getValueAsList(av)) {\n"
+              + "                if(clazz.isInstance(v.getValue())) {\n"
+              + "                    result.add(clazz.cast(v.getValue()));\n"
+              + "                } else{\n"
+              + "                    return List.of();\n"
+              + "                }\n"
+              + "            }\n"
+              + "            return result;\n"
+              + "        } else {\n"
+              + "            return List.of();\n"
+              + "        }\n"
+              + "    }\n"
+              + "    @SuppressWarnings(\"unchecked\")\n"
+              + "    private static List<AnnotationValue> getValueAsList(AnnotationValue av) {\n"
+              + "        return (List<AnnotationValue>)av.getValue();\n"
+              + "    }\n");
   }
 
-  private void generateFixedClassContent(String indent, PrintWriter out, String outerName) {
+  private void generateFixedClassContent(
+      String indent,
+      PrintWriter out,
+      String outerName,
+      boolean generateValue,
+      boolean generateArray) {
     out.format(
         "%s    private Map<String, AnnotationValue> defaults = new HashMap<String, AnnotationValue>(10);%n",
         indent);
@@ -489,21 +513,26 @@ public final class PrismGenerator extends AbstractProcessor {
         indent);
     out.format("%s    private boolean valid = true;%n", indent);
     out.format("%n");
-    out.format("%s    private <T> T getValue(String name, Class<T> clazz) {%n", indent);
-    out.format(
-        "%s        T result = %s.getValue(memberValues, defaults, name, clazz);%n",
-        indent, outerName);
-    out.format("%s        if(result == null) valid = false;%n", indent);
-    out.format("%s        return result;%n", indent);
-    out.format("%s    } %n", indent);
-    out.format("%n");
-    out.format(
-        "%s    private <T> List<T> getArrayValues(String name, final Class<T> clazz) {%n", indent);
-    out.format(
-        "%s        List<T> result = %s.getArrayValues(memberValues, defaults, name, clazz);%n",
-        indent, outerName);
-    out.format("%s        if(result == null) valid = false;%n", indent);
-    out.format("%s        return result;%n", indent);
-    out.format("%s    }%n", indent);
+    if (generateValue) {
+      out.format("%s    private <T> T getValue(String name, Class<T> clazz) {%n", indent);
+      out.format(
+          "%s        T result = %s.getValue(memberValues, defaults, name, clazz);%n",
+          indent, outerName);
+      out.format("%s        if(result == null) valid = false;%n", indent);
+      out.format("%s        return result;%n", indent);
+      out.format("%s    } %n", indent);
+      out.format("%n");
+    }
+    if (generateArray) {
+      out.format(
+          "%s    private <T> List<T> getArrayValues(String name, final Class<T> clazz) {%n",
+          indent);
+      out.format(
+          "%s        List<T> result = %s.getArrayValues(memberValues, defaults, name, clazz);%n",
+          indent, outerName);
+      out.format("%s        if(result == null) valid = false;%n", indent);
+      out.format("%s        return result;%n", indent);
+      out.format("%s    }%n", indent);
+    }
   }
 }
