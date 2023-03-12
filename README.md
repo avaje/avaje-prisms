@@ -5,7 +5,7 @@
 
 # Avaje Prisms
 
-Fork of the legendary [hickory annotation processer](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). Hickory has served well since it was created in 2010, but it doesn't have module support, and isn't likely to recieve it. 
+Fork of the legendary [hickory annotation processor](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). Hickory has served pretty well since it was created in 2010, but it's unmaintained and doesn't have module support. 
 
 ## Differences from Hickory
 
@@ -13,7 +13,7 @@ Fork of the legendary [hickory annotation processer](https://javadoc.io/static/c
 - Adds modular support via module-info
 - `@GeneratedPrism` is now repeatable
 - Generates a `getAllInstances` method to retrieve a list of prisms from an element
-- Generates an `isPresent` method to easily check if an element has the target annotation.
+- Generates an `isPresent` method to easily check if an element has the target annotation
 - Generates `Optional` factory methods  
 - Generates a `getAllInstances` method to retrieve a list of prisms from an element
 - Generates a `getAllOnMetaAnnotations` method to retrieve a list of prisms from an element's annotations
@@ -86,7 +86,7 @@ MyExampleAnnotationPrism exampleAnnotation = MyExampleAnnotationPrism.getInstanc
 //can get the original annotation type as a string
 String annotationQualifiedType = MyExampleAnnotationPrism.PRISM_TYPE
 
-//can call the annotation methods as if the annotation was practically present on the classpath.
+//can easily retrive the annotation values as if the annotation was present on the classpath.
 exampleAnnotation.getValue()
   ...
     }
