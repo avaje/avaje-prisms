@@ -202,7 +202,8 @@ public final class PrismGenerator extends AbstractProcessor {
         out.format("package %s;%n%n", packageName);
       }
       final var isMeta = Util.isMeta(typeMirror);
-      if (Util.isRepeatable(typeMirror) || isMeta) {
+      final var isRepeatable = Util.isRepeatable(typeMirror);
+      if (isRepeatable || isMeta) {
         out.format("import static java.util.stream.Collectors.*;%n");
         out.format("import java.util.stream.Stream;%n");
       }
@@ -243,7 +244,7 @@ public final class PrismGenerator extends AbstractProcessor {
             new GenerateContext("    ", out, name, innerName, next, access), otherPrisms);
         out.format("    }%n");
       }
-      generateStaticMembers(out, Util.isMeta(typeMirror) || Util.isRepeatable(typeMirror));
+      generateStaticMembers(out, isRepeatable || isMeta);
       out.format("}%n");
     } finally {
       out.close();
