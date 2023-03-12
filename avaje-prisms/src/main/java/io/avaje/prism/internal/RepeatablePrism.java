@@ -1,8 +1,6 @@
 package io.avaje.prism.internal;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,13 +9,10 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 /** A Prism representing an {@code @java.lang.annotation.Repeatable} annotation. */
 class RepeatablePrism {
-  /** store prism value of value */
-  private final TypeMirror _value;
 
   public static final String PRISM_TYPE = "java.lang.annotation.Repeatable";
 
@@ -26,6 +21,7 @@ class RepeatablePrism {
    * this prism. Primarily intended to support using Messager.
    */
   final Values values;
+
   /** Returns true if the prism annotation is present on the element, else false. */
   static boolean isPresent(Element element) {
     return getInstanceOn(element) != null;
@@ -86,20 +82,9 @@ class RepeatablePrism {
         ElementFilter.methodsIn(mirror.getAnnotationType().asElement().getEnclosedElements())) {
       defaults.put(member.getSimpleName().toString(), member.getDefaultValue());
     }
-    _value = getValue("value", TypeMirror.class);
     this.values = new Values(memberValues);
     this.mirror = mirror;
     this.isValid = valid;
-  }
-
-  /**
-   * Returns a TypeMirror representing the value of the {@code java.lang.Class<? extends
-   * java.lang.annotation.Annotation> value()} member of the Annotation.
-   *
-   * @see java.lang.annotation.Repeatable#value()
-   */
-  TypeMirror value() {
-    return _value;
   }
 
   /**
@@ -137,19 +122,7 @@ class RepeatablePrism {
 
   private final Map<String, AnnotationValue> defaults = new HashMap<>(10);
   private final Map<String, AnnotationValue> memberValues = new HashMap<>(10);
-  private boolean valid = true;
-
-  private <T> T getValue(String name, Class<T> clazz) {
-    final var result = RepeatablePrism.getValue(memberValues, defaults, name, clazz);
-    if (result == null) valid = false;
-    return result;
-  }
-
-  private <T> List<T> getArrayValues(String name, final Class<T> clazz) {
-    final List<T> result = RepeatablePrism.getArrayValues(memberValues, defaults, name, clazz);
-    if (result == null) valid = false;
-    return result;
-  }
+  private final boolean valid = true;
 
   private static AnnotationMirror getMirror(String fqn, Element target) {
     for (final AnnotationMirror m : target.getAnnotationMirrors()) {
@@ -158,59 +131,5 @@ class RepeatablePrism {
       if (fqn.contentEquals(mfqn)) return m;
     }
     return null;
-  }
-
-  private static List<AnnotationMirror> getMirrors(String fqn, Element target) {
-    final var mirrors = new ArrayList<AnnotationMirror>();
-    for (final AnnotationMirror m : target.getAnnotationMirrors()) {
-      final CharSequence mfqn =
-          ((TypeElement) m.getAnnotationType().asElement()).getQualifiedName();
-      if (fqn.contentEquals(mfqn)) mirrors.add(m);
-    }
-    return mirrors;
-  }
-
-  private static <T> T getValue(
-      Map<String, AnnotationValue> memberValues,
-      Map<String, AnnotationValue> defaults,
-      String name,
-      Class<T> clazz) {
-    var av = memberValues.get(name);
-    if (av == null) av = defaults.get(name);
-    if (av == null) {
-      return null;
-    }
-    if (clazz.isInstance(av.getValue())) return clazz.cast(av.getValue());
-    return null;
-  }
-
-  private static <T> List<T> getArrayValues(
-      Map<String, AnnotationValue> memberValues,
-      Map<String, AnnotationValue> defaults,
-      String name,
-      final Class<T> clazz) {
-    var av = memberValues.get(name);
-    if (av == null) av = defaults.get(name);
-    if (av == null) {
-      return java.util.List.of();
-    }
-    if (av.getValue() instanceof List) {
-      final List<T> result = new ArrayList<>();
-      for (final AnnotationValue v : getValueAsList(av)) {
-        if (clazz.isInstance(v.getValue())) {
-          result.add(clazz.cast(v.getValue()));
-        } else {
-          return List.of();
-        }
-      }
-      return result;
-    } else {
-      return List.of();
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private static List<AnnotationValue> getValueAsList(AnnotationValue av) {
-    return (List<AnnotationValue>) av.getValue();
   }
 }

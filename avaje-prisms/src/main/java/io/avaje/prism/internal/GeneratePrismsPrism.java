@@ -136,12 +136,6 @@ class GeneratePrismsPrism {
   private final Map<String, AnnotationValue> memberValues = new HashMap<>(10);
   private boolean valid = true;
 
-  private <T> T getValue(String name, Class<T> clazz) {
-    final T result = GeneratePrismsPrism.getValue(memberValues, defaults, name, clazz);
-    if (result == null) valid = false;
-    return result;
-  }
-
   private <T> List<T> getArrayValues(String name, final Class<T> clazz) {
     final List<T> result = GeneratePrismsPrism.getArrayValues(memberValues, defaults, name, clazz);
     if (result == null) valid = false;
@@ -154,20 +148,6 @@ class GeneratePrismsPrism {
           ((TypeElement) m.getAnnotationType().asElement()).getQualifiedName();
       if (fqn.contentEquals(mfqn)) return m;
     }
-    return null;
-  }
-
-  private static <T> T getValue(
-      Map<String, AnnotationValue> memberValues,
-      Map<String, AnnotationValue> defaults,
-      String name,
-      Class<T> clazz) {
-    AnnotationValue av = memberValues.get(name);
-    if (av == null) av = defaults.get(name);
-    if (av == null) {
-      return null;
-    }
-    if (clazz.isInstance(av.getValue())) return clazz.cast(av.getValue());
     return null;
   }
 

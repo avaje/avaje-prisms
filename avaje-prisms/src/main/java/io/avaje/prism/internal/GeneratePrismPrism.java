@@ -30,9 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package io.avaje.prism.internal;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -180,12 +178,6 @@ class GeneratePrismPrism {
     return result;
   }
 
-  private <T> List<T> getArrayValues(String name, final Class<T> clazz) {
-    final List<T> result = GeneratePrismPrism.getArrayValues(memberValues, defaults, name, clazz);
-    if (result == null) valid = false;
-    return result;
-  }
-
   private static AnnotationMirror getMirror(String fqn, Element target) {
     for (final AnnotationMirror m : target.getAnnotationMirrors()) {
       final CharSequence mfqn =
@@ -207,35 +199,5 @@ class GeneratePrismPrism {
     }
     if (clazz.isInstance(av.getValue())) return clazz.cast(av.getValue());
     return null;
-  }
-
-  private static <T> List<T> getArrayValues(
-      Map<String, AnnotationValue> memberValues,
-      Map<String, AnnotationValue> defaults,
-      String name,
-      final Class<T> clazz) {
-    AnnotationValue av = memberValues.get(name);
-    if (av == null) av = defaults.get(name);
-    if (av == null) {
-      return null;
-    }
-    if (av.getValue() instanceof List) {
-      final List<T> result = new ArrayList<>();
-      for (final AnnotationValue v : getValueAsList(av)) {
-        if (clazz.isInstance(v.getValue())) {
-          result.add(clazz.cast(v.getValue()));
-        } else {
-          return null;
-        }
-      }
-      return result;
-    } else {
-      return null;
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private static List<AnnotationValue> getValueAsList(AnnotationValue av) {
-    return (List<AnnotationValue>) av.getValue();
   }
 }
