@@ -59,15 +59,11 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <skip>true</skip>
+          <show>public</show>
+          <failOnWarnings>false</failOnWarnings>
+          <detectJavaApiLink>false</detectJavaApiLink>
         </configuration>
       </plugin>
     </plugins>

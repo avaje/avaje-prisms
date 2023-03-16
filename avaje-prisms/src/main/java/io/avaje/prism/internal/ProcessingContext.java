@@ -15,61 +15,72 @@ import javax.tools.JavaFileObject;
 
 final class ProcessingContext {
 
+  private static final ThreadLocal<Ctx> CTX = new ThreadLocal<>();
+
   private ProcessingContext() {}
 
-  private static Messager messager;
-  private static Filer filer;
-  private static Elements elementUtils;
-  private static Types typeUtils;
+  static final class Ctx {
+    private final Messager messager;
+    private final Filer filer;
+    private final Elements elementUtils;
+    private final Types typeUtils;
+    public Ctx(ProcessingEnvironment processingEnv) {
 
-  static void init(ProcessingEnvironment processingEnv) {
+      messager = processingEnv.getMessager();
+      filer = processingEnv.getFiler();
+      elementUtils = processingEnv.getElementUtils();
+      typeUtils = processingEnv.getTypeUtils();
+    }
+  }
 
-    messager = processingEnv.getMessager();
-    filer = processingEnv.getFiler();
-    elementUtils = processingEnv.getElementUtils();
-    typeUtils = processingEnv.getTypeUtils();
+  public static void init(ProcessingEnvironment processingEnv) {
+    CTX.set(new Ctx(processingEnv));
   }
 
   /** Log an error message. */
   static void logError(Element e, String msg, Object... args) {
-    messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
+    CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
   static void logError(String msg, Object... args) {
-    messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args));
+    CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args));
   }
 
   static void logWarn(String msg, Object... args) {
-    messager.printMessage(Diagnostic.Kind.WARNING, String.format(msg, args));
+    CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, String.format(msg, args));
   }
 
   static void logDebug(String msg, Object... args) {
-    messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
+    CTX.get().messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
   }
 
   /** Create a file writer for the given class name. */
   static JavaFileObject createWriter(String cls) throws IOException {
-    return filer.createSourceFile(cls);
+    return CTX.get().filer.createSourceFile(cls);
   }
 
   static TypeElement element(String rawType) {
-    return elementUtils.getTypeElement(rawType);
+    return CTX.get().elementUtils.getTypeElement(rawType);
   }
 
   static Types types() {
-    return typeUtils;
+    return CTX.get().typeUtils;
   }
 
   static TypeElement elementMaybe(String rawType) {
     if (rawType == null) {
       return null;
     } else {
-      return elementUtils.getTypeElement(rawType);
+      return CTX.get().elementUtils.getTypeElement(rawType);
     }
   }
 
   static Element asElement(TypeMirror returnType) {
 
-    return typeUtils.asElement(returnType);
+    return CTX.get().typeUtils.asElement(returnType);
+  }
+
+  public static void clear() {
+    CTX.remove();
   }
 }
