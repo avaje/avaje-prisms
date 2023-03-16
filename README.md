@@ -40,7 +40,7 @@ A prism has the same member methods as the annotation except that the return typ
 
 ## How to use
 
-#### 1. Add avaje-prisms as a dependency in your annotation processor.
+#### 1. Add avaje-prisms as a dependency in your annotation processor (AP).
 ```xml
     <dependency>
       <groupId>io.avaje</groupId>
@@ -51,7 +51,7 @@ A prism has the same member methods as the annotation except that the return typ
     </dependency>
 ```
 
-#### 2. Replace `<compilerArgument>-proc:none</compilerArgument>` with this annotation processor
+#### 2. In your AP's pom.xml, replace `<compilerArgument>-proc:none</compilerArgument>` with this annotation processor
 
 ```xml
 <plugin>
@@ -68,6 +68,7 @@ A prism has the same member methods as the annotation except that the return typ
   </configuration>
 </plugin>
 ```
+This ensures that only the prism generator will run at build time.
 
 #### 3. Add `@GeneratePrism` targeting an annotation to a package-info.java/class.
 
