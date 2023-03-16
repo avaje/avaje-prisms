@@ -4,7 +4,8 @@ import java.lang.annotation.Target;
 
 import io.avaje.prism.GeneratePrism;
 
-
+@GeneratePrism(GeneratePrism.class)
+@GeneratePrism(GeneratePrisms.class)
 @GeneratePrism(io.avaje.jsonb.Json.class)
 @GeneratePrism(io.avaje.jsonb.Json.Import.class)
 @GeneratePrism(io.avaje.jsonb.Json.JsonAlias.class)
