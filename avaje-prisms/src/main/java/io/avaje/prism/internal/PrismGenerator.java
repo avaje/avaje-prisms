@@ -239,7 +239,9 @@ public final class PrismGenerator extends AbstractProcessor {
         final DeclaredType next = inners.remove();
         final String innerName = next.asElement().getSimpleName().toString() + "Prism";
         ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
-        out.format("  %sstatic class %s {\n", access, innerName);
+
+        out.format("\n  /** %s inner prism. */\n", innerName);
+		out.format("  %sstatic class %s {\n", access, innerName);
         generateClassBody(
             new GenerateContext("  ", out, name, innerName, next, access), otherPrisms);
         out.format("  }\n");
