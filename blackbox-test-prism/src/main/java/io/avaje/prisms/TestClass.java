@@ -3,11 +3,8 @@ package io.avaje.prisms;
 import java.lang.annotation.Target;
 
 import io.avaje.prism.GeneratePrism;
-import io.avaje.prism.GeneratePrisms;
 
 
-@GeneratePrism(GeneratePrism.class)
-@GeneratePrism(GeneratePrisms.class)
 @GeneratePrism(io.avaje.jsonb.Json.class)
 @GeneratePrism(io.avaje.jsonb.Json.Import.class)
 @GeneratePrism(io.avaje.jsonb.Json.JsonAlias.class)
