@@ -438,7 +438,7 @@ public final class PrismGenerator extends AbstractProcessor {
           }
         }
       } else {
-        System.out.format("Unprocessed type %s", type);
+        ProcessingContext.logDebug("Unprocessed type" + type);
       }
     }
     return result;
