@@ -5,7 +5,6 @@
 		<artifactId>avaje-prisms-parent</artifactId>
 		<version>1.6</version>
 	</parent>
-	<groupId>io.avaje</groupId>
 	<artifactId>avaje-prisms</artifactId>
 	<name>avaje-prisms</name>
 	<description>A modular fork of hickory</description>

@@ -105,6 +105,7 @@ public final class PrismGenerator extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> tes, RoundEnvironment renv) {
     if (renv.processingOver()) {
+      ProcessingContext.clear();
       return true;
     }
 

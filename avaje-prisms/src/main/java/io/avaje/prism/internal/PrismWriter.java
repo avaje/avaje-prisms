@@ -81,7 +81,7 @@ class PrismWriter {
     if (arrayed) {
       out.format("%s    /** %n", indent);
       out.format(
-          "%s      * Returns a List<%s> representing the value of the {@code %s} member of the Annotation.%n",
+          "%s      * Returns a List&lt;%s&gt; representing the value of the {@code %s} member of the Annotation.%n",
           indent, prismType, m);
       out.format(
           "%s      * @see %s#%s()%n",
