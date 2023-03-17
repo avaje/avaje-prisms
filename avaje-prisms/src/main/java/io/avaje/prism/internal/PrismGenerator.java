@@ -308,10 +308,10 @@ public final class PrismGenerator extends AbstractProcessor {
 
     // write constructor
     out.format("%s  private %s(AnnotationMirror mirror) {\n", indent, name);
-    out.format("%s    for (ExecutableElement key : mirror.getElementValues().keySet()) {\n", indent);
+    out.format("%s    for (final ExecutableElement key : mirror.getElementValues().keySet()) {\n", indent);
     out.format("%s      memberValues.put(key.getSimpleName().toString(), mirror.getElementValues().get(key));\n", indent);
     out.format("%s    }\n", indent);
-    out.format("%s    for (ExecutableElement member : ElementFilter.methodsIn(mirror.getAnnotationType().asElement().getEnclosedElements())) {\n", indent);
+    out.format("%s    for (final ExecutableElement member : ElementFilter.methodsIn(mirror.getAnnotationType().asElement().getEnclosedElements())) {\n", indent);
     out.format("%s      defaults.put(member.getSimpleName().toString(), member.getDefaultValue());\n", indent);
     out.format("%s    }\n", indent);
     for (final PrismWriter w : writers) {
@@ -441,44 +441,44 @@ public final class PrismGenerator extends AbstractProcessor {
             + "      if (PRISM_TYPE.contentEquals(mfqn)) return m;\n"
             + "    }\n"
             + "    return null;\n"
-            + "  }\n");
+            + "  }\n\n");
     if (generateGetMirrors)
       out.print("  private static Stream<? extends AnnotationMirror> getMirrors(Element target) {\n"
               + "    return target.getAnnotationMirrors().stream()\n"
               + "        .filter(\n"
               + "             m -> PRISM_TYPE.contentEquals(((TypeElement) m.getAnnotationType().asElement()).getQualifiedName()));\n"
-              + "  }\n");
+              + "  }\n\n");
     if (generateValue)
       out.print("  private static <T> T getValue(Map<String, AnnotationValue> memberValues, Map<String, AnnotationValue> defaults, String name, Class<T> clazz) {\n"
               + "    AnnotationValue av = memberValues.get(name);\n"
               + "    if (av == null) av = defaults.get(name);\n"
               + "    if (av == null) {\n"
-              + "        return null;\n"
+              + "      return null;\n"
               + "    }\n"
               + "    if (clazz.isInstance(av.getValue())) return clazz.cast(av.getValue());\n"
               + "    return null;\n"
-              + "  }\n");
+              + "  }\n\n");
     if (generateArray)
       out.print("  private static <T> List<T> getArrayValues(Map<String, AnnotationValue> memberValues, Map<String, AnnotationValue> defaults, String name, final Class<T> clazz) {\n"
               + "    AnnotationValue av = memberValues.get(name);\n"
               + "    if (av == null) av = defaults.get(name);\n"
               + "    if (av == null) {\n"
-              + "        return java.util.List.of();\n"
+              + "      return List.of();\n"
               + "    }\n"
               + "    if (av.getValue() instanceof List) {\n"
-              + "        List<T> result = new ArrayList<T>();\n"
-              + "        for (final var v : getValueAsList(av)) {\n"
-              + "            if (clazz.isInstance(v.getValue())) {\n"
-              + "                result.add(clazz.cast(v.getValue()));\n"
-              + "            } else {\n"
-              + "                return List.of();\n"
-              + "            }\n"
+              + "      final List<T> result = new ArrayList<>();\n"
+              + "      for (final var v : getValueAsList(av)) {\n"
+              + "        if (clazz.isInstance(v.getValue())) {\n"
+              + "          result.add(clazz.cast(v.getValue()));\n"
+              + "        } else {\n"
+              + "          return List.of();\n"
               + "        }\n"
-              + "        return result;\n"
+              + "      }\n"
+              + "      return result;\n"
               + "    } else {\n"
-              + "        return List.of();\n"
+              + "      return List.of();\n"
               + "    }\n"
-              + "  }\n"
+              + "  }\n\n"
               + "  @SuppressWarnings(\"unchecked\")\n"
               + "  private static List<AnnotationValue> getValueAsList(AnnotationValue av) {\n"
               + "    return (List<AnnotationValue>) av.getValue();\n"

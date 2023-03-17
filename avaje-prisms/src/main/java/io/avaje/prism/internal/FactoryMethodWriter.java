@@ -67,7 +67,7 @@ public class FactoryMethodWriter {
 	out.format("%s   * @return prism for element or null if no annotation is found. \n", indent);
     out.format("%s   */\n", indent);
     out.format("%s  %sstatic %s getInstanceOn(Element element) {\n", indent, access, name);
-    out.format("%s    AnnotationMirror mirror = getMirror(element);\n", indent);
+    out.format("%s    final var mirror = getMirror(element);\n", indent);
     out.format("%s    if (mirror == null) return null;\n", indent);
     out.format("%s    return getInstance(mirror);\n", indent);
     out.format("%s  }\n\n", indent);
@@ -85,7 +85,7 @@ public class FactoryMethodWriter {
 	out.format("%s   * @return prism optional for element. \n", indent);
     out.format("%s   */\n", indent);
     out.format("%s  %sstatic Optional<%s> getOptionalOn(Element element) {\n", indent, access, name);
-    out.format("%s    AnnotationMirror mirror = getMirror(element);\n", indent);
+    out.format("%s    final var mirror = getMirror(element);\n", indent);
     out.format("%s    if (mirror == null) return Optional.empty();\n", indent);
     out.format("%s    return getOptional(mirror);\n", indent);
     out.format("%s  }\n\n", indent);
