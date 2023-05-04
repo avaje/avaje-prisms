@@ -306,7 +306,7 @@ public final class PrismGenerator extends AbstractProcessor {
         writeArrayValue = true;
       }
       writeValue = true;
-      writers.add(getWriter(m, access, otherPrisms));
+      writers.add(getWriter(m, otherPrisms));
     }
     for (final PrismWriter w : writers) {
       w.writeField(indent, out);
@@ -392,7 +392,7 @@ public final class PrismGenerator extends AbstractProcessor {
   }
 
   private PrismWriter getWriter(
-      ExecutableElement m, String access, Map<DeclaredType, String> otherPrisms) {
+      ExecutableElement m, Map<DeclaredType, String> otherPrisms) {
 
     final WildcardType q = types.getWildcardType(null, null);
     final TypeMirror enumType = types.getDeclaredType(elements.getTypeElement("java.lang.Enum"), q);
@@ -400,9 +400,9 @@ public final class PrismGenerator extends AbstractProcessor {
     PrismWriter result = null;
     if (typem.getKind() == TypeKind.ARRAY) {
       typem = ((ArrayType) typem).getComponentType();
-      result = new PrismWriter(m, true, access);
+      result = new PrismWriter(m, true);
     } else {
-      result = new PrismWriter(m, false, access);
+      result = new PrismWriter(m, false);
     }
     if (typem.getKind().isPrimitive()) {
       final String typeName = types.boxedClass((PrimitiveType) typem).getSimpleName().toString();
