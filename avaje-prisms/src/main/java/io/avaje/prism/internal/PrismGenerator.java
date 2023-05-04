@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package io.avaje.prism.internal;
 
+import static java.util.function.Predicate.not;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
@@ -47,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -166,11 +169,29 @@ public final class PrismGenerator extends AbstractProcessor {
               ann.mirror);
       return;
     }
+    final var superClassBuilder = new StringBuilder();
+
+    Optional.of(ann.superClass())
+        .map(Object::toString)
+        .filter(not(Void.class.getCanonicalName()::equals))
+        .ifPresent(type -> superClassBuilder.append(" extends ").append(type));
+    var first = true;
+    for (final var superInterface : ann.superInterfaces()) {
+      if (first) {
+
+        superClassBuilder.append(" implements ").append(superInterface.toString());
+        first = false;
+        continue;
+      }
+      superClassBuilder.append(", ").append(superInterface.toString());
+    }
+
     generatePrism(
         name,
         packageName,
         (DeclaredType) ann.value(),
         ann.publicAccess() ? "public " : "",
+        superClassBuilder.toString(),
         otherPrisms);
     generated.put(prismFqn, ann.value());
   }
@@ -187,6 +208,7 @@ public final class PrismGenerator extends AbstractProcessor {
       String packageName,
       DeclaredType typeMirror,
       String access,
+      String superClassString,
       Map<DeclaredType, String> otherPrisms) {
     inners.clear();
     seenInners.clear();
@@ -231,7 +253,7 @@ public final class PrismGenerator extends AbstractProcessor {
 
       final String annName = ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
       out.format("/** A Prism representing an {@code @%s} annotation. */ \n", annName);
-      out.format("%sfinal class %s {\n", access, name);
+      out.format("%sfinal class %s%s {\n", access, name, superClassString);
 
       // SHOULD make public only if the anotation says so, package by default.
       generateClassBody(new GenerateContext("", out, name, name, typeMirror, access), otherPrisms);
@@ -284,7 +306,7 @@ public final class PrismGenerator extends AbstractProcessor {
         writeArrayValue = true;
       }
       writeValue = true;
-      writers.add(getWriter(m, access, otherPrisms));
+      writers.add(getWriter(m, otherPrisms));
     }
     for (final PrismWriter w : writers) {
       w.writeField(indent, out);
@@ -370,7 +392,7 @@ public final class PrismGenerator extends AbstractProcessor {
   }
 
   private PrismWriter getWriter(
-      ExecutableElement m, String access, Map<DeclaredType, String> otherPrisms) {
+      ExecutableElement m, Map<DeclaredType, String> otherPrisms) {
 
     final WildcardType q = types.getWildcardType(null, null);
     final TypeMirror enumType = types.getDeclaredType(elements.getTypeElement("java.lang.Enum"), q);
@@ -378,9 +400,9 @@ public final class PrismGenerator extends AbstractProcessor {
     PrismWriter result = null;
     if (typem.getKind() == TypeKind.ARRAY) {
       typem = ((ArrayType) typem).getComponentType();
-      result = new PrismWriter(m, true, access);
+      result = new PrismWriter(m, true);
     } else {
-      result = new PrismWriter(m, false, access);
+      result = new PrismWriter(m, false);
     }
     if (typem.getKind().isPrimitive()) {
       final String typeName = types.boxedClass((PrimitiveType) typem).getSimpleName().toString();
