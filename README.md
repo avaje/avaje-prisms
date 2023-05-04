@@ -12,6 +12,7 @@ Fork of the legendary [hickory annotation processor](https://javadoc.io/static/c
 - Upgrades from JDK 6 to 11
 - Adds modular support via module-info
 - `@GeneratedPrism` is now repeatable
+- Can choose what classes the generated Prisms inherit
 - Generates a `getAllInstances` method to retrieve a list of prisms from an element
 - Generates an `isPresent` method to easily check if an element has the target annotation
 - Generates `Optional` factory methods  
