@@ -36,7 +36,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package io.avaje.prism;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Generates a Prism for the specified annotation, in the same package as the target.
@@ -64,4 +68,13 @@ public @interface GeneratePrism {
    * package as the AnnotationProcessor which uses them.
    */
   boolean publicAccess() default false;
+
+  /**
+   * Set the class the generated Prism class will extend. Useful for adding shared
+   * functionality for multiple Prisms.
+   */
+  Class<?> superClass() default Void.class;
+
+  /** Set the interfaces the generated Prism class will implement. Useful for grouping multiple similar annotations (e.g. Jakarta/Javax)*/
+  Class<?>[] superInterfaces() default {};
 }
