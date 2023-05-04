@@ -70,11 +70,15 @@ public @interface GeneratePrism {
   boolean publicAccess() default false;
 
   /**
-   * Set the class the generated Prism class will extend. Useful for adding shared
-   * functionality for multiple Prisms.
+   * Set the class the generated Prism class will extend. Useful for adding shared functionality for
+   * multiple Prisms.
    */
   Class<?> superClass() default Void.class;
 
-  /** Set the interfaces the generated Prism class will implement. Useful for grouping multiple similar annotations (e.g. Jakarta/Javax)*/
+  /**
+   * Set the interfaces the generated Prism class will implement. Useful for grouping multiple
+   * similar annotations. (e.g. You could have a common interface for Jakarta/Javax versions of an
+   * annotation)
+   */
   Class<?>[] superInterfaces() default {};
 }
