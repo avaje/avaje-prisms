@@ -422,8 +422,8 @@ public final class PrismGenerator extends AbstractProcessor {
       } else if (types.isSubtype(type, enumType)) {
         // Enum
         result.setMirrorType("VariableElement");
-        result.setPrismType("TypeMirror");
-        result.setM2pFormat("%s.asType()");
+        result.setPrismType("String");
+        result.setM2pFormat("%s.getSimpleName().toString()");
       } else if (types.isSubtype(
           type, elements.getTypeElement("java.lang.annotation.Annotation").asType())) {
         result.setMirrorType("AnnotationMirror");
