@@ -17,9 +17,7 @@
 	</scm>
 
 	<properties>
-	  <nexus.staging.keepStagingRepositoryOnFailure>true</nexus.staging.keepStagingRepositoryOnFailure>
-	  <nexus.staging.skipStagingRepositoryClose>true</nexus.staging.skipStagingRepositoryClose>
-	  <nexus.staging.autoReleaseAfterClose>false</nexus.staging.autoReleaseAfterClose>
+	  <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
 	</properties>
   
 	<modules>
