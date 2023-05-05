@@ -12,12 +12,11 @@ Fork of the legendary [hickory annotation processor](https://javadoc.io/static/c
 - Upgrades from JDK 6 to 11
 - Adds modular support via module-info
 - `@GeneratedPrism` is now repeatable
-- Can choose what classes the generated Prisms inherit
-- Generates a `getAllInstances` method to retrieve a list of prisms from an element
+- Can choose what classes the generated Prisms inherit.
 - Generates an `isPresent` method to easily check if an element has the target annotation
 - Generates `Optional` factory methods  
-- Generates a `getAllInstances` method to retrieve a list of prisms from an element
-- Generates a `getAllOnMetaAnnotations` method to retrieve a list of prisms from an element's annotations
+- Generates a `getAllInstances` method to retrieve a list of prisms from an element (`@Repeatable` annotations only)
+- Generates a `getAllOnMetaAnnotations` method to retrieve a list of prisms from an element's annotations (Meta annotations only)
 - Exposes the fully qualified type of the target annotation as a string.
 - `getInstance` returns null instead of throwing exceptions when the provided mirror doesn't match the prism target
 - null annotation array values are returned as empty lists
