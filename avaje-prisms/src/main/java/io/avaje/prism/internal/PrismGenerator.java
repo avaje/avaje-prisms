@@ -156,7 +156,7 @@ public final class PrismGenerator extends AbstractProcessor {
     final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
     if (generated.containsKey(prismFqn)) {
       // if same value dont need to generate, if different then error
-      if (generated.get(prismFqn).equals(ann.value())) {
+      if (types.isSameType(generated.get(prismFqn), ann.value())) {
         return;
       }
       processingEnv
