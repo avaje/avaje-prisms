@@ -47,11 +47,6 @@ class GeneratePrismsPrism {
   private final List<GeneratePrismPrism> _value;
 
   /**
-   * An instance of the Values inner class whose methods return the AnnotationValues used to build
-   * this prism. Primarily intended to support using Messager.
-   */
-  final Values values;
-  /**
    * Return a prism representing the {@code @io.avaje.prism.GeneratePrisms} annotation on 'e'.
    * similar to {@code e.getAnnotation(io.avaje.prism.GeneratePrisms.class)} except that an
    * instance of this class rather than an instance of {@code io.avaje.prism.GeneratePrisms} is
@@ -84,7 +79,6 @@ class GeneratePrismsPrism {
     for (final AnnotationMirror valueMirror : valueMirrors) {
       _value.add(GeneratePrismPrism.getInstance(valueMirror));
     }
-    this.values = new Values(memberValues);
     this.mirror = mirror;
     this.isValid = valid;
   }
@@ -112,25 +106,6 @@ class GeneratePrismsPrism {
    * to support using Messager.
    */
   final AnnotationMirror mirror;
-  /**
-   * A class whose members corespond to those of io.avaje.prism.GeneratePrisms but which each
-   * return the AnnotationValue corresponding to that member in the model of the annotations.
-   * Returns null for defaulted members. Used for Messager, so default values are not useful.
-   */
-  static class Values {
-    private final Map<String, AnnotationValue> values;
-
-    private Values(Map<String, AnnotationValue> values) {
-      this.values = values;
-    }
-    /**
-     * Return the AnnotationValue corresponding to the value() member of the annotation, or null
-     * when the default value is implied.
-     */
-    AnnotationValue value() {
-      return values.get("value");
-    }
-  }
 
   private final Map<String, AnnotationValue> defaults = new HashMap<>(10);
   private final Map<String, AnnotationValue> memberValues = new HashMap<>(10);
@@ -159,7 +134,7 @@ class GeneratePrismsPrism {
     AnnotationValue av = memberValues.get(name);
     if (av == null) av = defaults.get(name);
     if (av == null) {
-      return null;
+      return List.of();
     }
     if (av.getValue() instanceof List) {
       final List<T> result = new ArrayList<>();
@@ -167,12 +142,12 @@ class GeneratePrismsPrism {
         if (clazz.isInstance(v.getValue())) {
           result.add(clazz.cast(v.getValue()));
         } else {
-          return null;
+          return List.of();
         }
       }
       return result;
     } else {
-      return null;
+      return List.of();
     }
   }
 
