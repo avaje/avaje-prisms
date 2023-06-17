@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -36,13 +35,6 @@ final class GeneratePrismPrism {
 
   public static final String PRISM_TYPE = "io.avaje.prism.GeneratePrism";
 
-  /**
-   * An instance of the Values inner class whose
-   * methods return the AnnotationValues used to build this prism.
-   * Primarily intended to support using Messager.
-   */
-  final Values values;
-
   /** Returns true if the prism annotation is present on the element, else false.
    *
    * @param element element.
@@ -64,20 +56,6 @@ final class GeneratePrismPrism {
     final var mirror = getMirror(element);
     if (mirror == null) return null;
     return getInstance(mirror);
-  }
-
-  /** Return a Optional representing a nullable {@code @io.avaje.prism.GeneratePrism} annotation on 'e'.
-   * similar to {@code element.getAnnotation(io.avaje.prism.GeneratePrism.class)} except that
-   * an Optional of this class rather than an instance of {@code io.avaje.prism.GeneratePrism}
-   * is returned.
-   *
-   * @param element element.
-   * @return prism optional for element.
-   */
-  static Optional<GeneratePrismPrism> getOptionalOn(Element element) {
-    final var mirror = getMirror(element);
-    if (mirror == null) return Optional.empty();
-    return getOptional(mirror);
   }
 
   /** Return a list of prisms representing the {@code @io.avaje.prism.GeneratePrism} annotation on 'e'.
@@ -105,20 +83,6 @@ final class GeneratePrismPrism {
     return new GeneratePrismPrism(mirror);
   }
 
-  /** Return a {@code Optional<GeneratePrismPrism>} representing a {@code @io.avaje.prism.GeneratePrism} annotation mirror.
-   * similar to {@code e.getAnnotation(io.avaje.prism.GeneratePrism.class)} except that
-   * an Optional of this class rather than an instance of {@code io.avaje.prism.GeneratePrism}
-   * is returned.
-   *
-   * @param mirror mirror.
-   * @return prism optional for mirror.
-   */
-  static Optional<GeneratePrismPrism> getOptional(AnnotationMirror mirror) {
-    if (mirror == null || !PRISM_TYPE.equals(mirror.getAnnotationType().toString())) return Optional.empty();
-
-    return Optional.of(new GeneratePrismPrism(mirror));
-  }
-
   private GeneratePrismPrism(AnnotationMirror mirror) {
     for (final ExecutableElement key : mirror.getElementValues().keySet()) {
       memberValues.put(key.getSimpleName().toString(), mirror.getElementValues().get(key));
@@ -131,7 +95,6 @@ final class GeneratePrismPrism {
     _publicAccess = getValue("publicAccess", Boolean.class);
     _superClass = getValue("superClass", TypeMirror.class);
     _superInterfaces = getArrayValues("superInterfaces", TypeMirror.class);
-    this.values = new Values(memberValues);
     this.mirror = mirror;
     this.isValid = valid;
   }
@@ -181,39 +144,7 @@ final class GeneratePrismPrism {
    * Primarily intended to support using Messager.
    */
    final AnnotationMirror mirror;
-  /**
-   * A class whose members corespond to those of io.avaje.prism.GeneratePrism
-   * but which each return the AnnotationValue corresponding to
-   * that member in the model of the annotations. Returns null for
-   * defaulted members. Used for Messager, so default values are not useful.
-   */
-  static final class Values {
-    private final Map<String, AnnotationValue> values;
 
-    private Values(Map<String, AnnotationValue> values) {
-      this.values = values;
-    }
-    /** Return the AnnotationValue corresponding to the value()
-     * member of the annotation, or null when the default value is implied.
-     */
-    AnnotationValue value(){ return values.get("value");}
-    /** Return the AnnotationValue corresponding to the name()
-     * member of the annotation, or null when the default value is implied.
-     */
-    AnnotationValue name(){ return values.get("name");}
-    /** Return the AnnotationValue corresponding to the publicAccess()
-     * member of the annotation, or null when the default value is implied.
-     */
-    AnnotationValue publicAccess(){ return values.get("publicAccess");}
-    /** Return the AnnotationValue corresponding to the superClass()
-     * member of the annotation, or null when the default value is implied.
-     */
-    AnnotationValue superClass(){ return values.get("superClass");}
-    /** Return the AnnotationValue corresponding to the superInterfaces()
-     * member of the annotation, or null when the default value is implied.
-     */
-    AnnotationValue superInterfaces(){ return values.get("superInterfaces");}
-  }
 
   private final Map<String, AnnotationValue> defaults = new HashMap<>(10);
   private final Map<String, AnnotationValue> memberValues = new HashMap<>(10);
