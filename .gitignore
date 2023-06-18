@@ -9,4 +9,5 @@ build/
 *.project
 *.processors
 */bin/
+.DS_Store
 
