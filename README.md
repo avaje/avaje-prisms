@@ -23,9 +23,9 @@ Fork of the legendary [hickory annotation processor](https://javadoc.io/static/c
 
 ## What's a Prism?
 
-When writing annotation processors the two conventional mechanisms to access the annotations are both awkward. `Element.getAnnotation()` can throw Exceptions if the annotation or its members are not semantically correct, and it can also fail to work on some modular projects. (This is one the reasons why `<annotationProcessorPaths>` is required for modular projects but it is seriously limited and technically not correct either: [MCOMPILER-391](https://issues.apache.org/jira/browse/MCOMPILER-391) and [MCOMPILER-412](https://issues.apache.org/jira/browse/MCOMPILER-412)) Moreover, when calling a member with a `Class` return type, you need to catch an exception to extract the `TypeMirror`.
+When writing annotation processors the two conventional mechanisms to access the annotations are both awkward. `Element.getAnnotation()` can throw Exceptions if the annotation or its members are not semantically correct, and it can also fail to work on some modular projects. (This is one the reasons why `<annotationProcessorPaths>` is required for modular projects but it is seriously limited and technically not correct either (See [MCOMPILER-412](https://issues.apache.org/jira/browse/MCOMPILER-412)) Moreover, when calling a member with a `Class` return type, you need to catch an exception to extract the `TypeMirror`.
 
-On the other hand, `AnnotationMirror` and `AnnotationValue` do a good job of modelling both correct and incorrect annotations, but provide no simple mechanism to determine whether it is correct or incorrect, and provide no convenient functionality to access the member values in a simple type specific way. While `AnnotationMirror` and `AnnotationValue` provide an ideal mechanism for dealing with unknown annotations, they are inconvenient for reading member values from known annotations.
+On the other hand, `AnnotationMirror` and `AnnotationValue` do a good job of modeling both correct and incorrect annotations, but provide no simple mechanism to determine whether it is correct or incorrect, and provide no convenient functionality to access the member values in a simple type-specific way. While `AnnotationMirror` and `AnnotationValue` provide an ideal mechanism for dealing with unknown annotations, they are inconvenient for reading member values from known annotations.
 
 A Prism provides a solution to this problem by combining the advantages of the pure reflective model of `AnnotationMirror` and the runtime (real) model provided by Element.getAnnotation(), hence the term Prism to capture this idea of partial reflection.
 
@@ -35,7 +35,7 @@ A prism has the same member methods as the annotation except that the return typ
 - Class members return a TypeMirror from the mirror API.
 - Enum members return a String being the name of the enum constant (because the constant value in the mirror API might not match those available in the runtime it cannot consistently return the appropriate enum).
 - String members return Strings.
-- Annotation members return a Prism of the annotation. If a prism for that annotation is generated from the same @GeneratePrisms annotation as the prism that uses it, then an instance of that prism will be returned. Otherwise a Prism for that annotation is supplied as an inner class of the dependant Prism. the name of which is the simple name of the referenced annotation type.
+- Annotation members return a Prism of the annotation. If a prism for that annotation is generated from the same @GeneratePrisms annotation as the prism that uses it, then an instance of that prism will be returned. Otherwise, a Prism for that annotation is supplied as an inner class of the dependant Prism. the name of which is the simple name of the referenced annotation type.
 - Array members return a List<X> where X is the appropriate prism mapping of the array component as above.
 
 ## How to use
