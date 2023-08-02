@@ -42,15 +42,20 @@ A prism has the same member methods as the annotation except that the return typ
 
 #### 1. Add avaje-prisms as a dependency in your annotation processor (AP).
 ```xml
-    <dependency>
-      <groupId>io.avaje</groupId>
-      <artifactId>avaje-prisms</artifactId>
-      <version>${avaje.prism.version}</version>
-      <optional>true</optional>
-      <scope>provided</scope>
-    </dependency>
+<dependency>
+  <groupId>io.avaje</groupId>
+  <artifactId>avaje-prisms</artifactId>
+  <version>${avaje.prism.version}</version>
+  <optional>true</optional>
+  <scope>provided</scope>
+</dependency>
 ```
-
+When working with Java modules you need to add prisms as a static dependency.
+```java
+module my.processor {
+  requires static io.avaje.prisms;
+}
+```
 #### 2. In your AP's pom.xml, replace `<compilerArgument>-proc:none</compilerArgument>` with this annotation processor
 
 ```xml
