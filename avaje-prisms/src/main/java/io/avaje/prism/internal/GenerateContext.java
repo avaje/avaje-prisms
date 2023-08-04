@@ -12,6 +12,7 @@ public class GenerateContext {
   private final String name;
   private final DeclaredType typeMirror;
   private final String access;
+  private String shortName;
   private String annName;
 
   public GenerateContext(
@@ -59,5 +60,10 @@ public class GenerateContext {
 
   public void setAnnName(String annName) {
     this.annName = annName;
+    this.shortName = Util.shortName(annName);
+  }
+
+  public String getShortName() {
+    return shortName;
   }
 }
