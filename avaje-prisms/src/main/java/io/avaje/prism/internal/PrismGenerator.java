@@ -252,7 +252,7 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("import javax.lang.model.util.ElementFilter;\n\n");
 
       final String annName = ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
-      out.format("/** A Prism representing an {@code @%s} annotation. */ \n", annName);
+      out.format("/** A Prism representing a {@link %s @%s} annotation. */ \n", annName, Util.shortName(annName));
       out.format("%sfinal class %s%s {\n", access, name, superClassString);
 
       // SHOULD make public only if the anotation says so, package by default.
@@ -315,7 +315,9 @@ public final class PrismGenerator extends AbstractProcessor {
     final String annName = ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
 
     ctx.setAnnName(annName);
-    out.format("%s  public static final String PRISM_TYPE = \"%s\";\n\n",  indent, ((TypeElement) (typeMirror.asElement())).getQualifiedName());
+    final String shortAnnName = ctx.getShortName();
+
+    out.format("%s  public static final String PRISM_TYPE = \"%s\";\n\n",  indent, annName);
     out.format("%s  /**\n", indent);
     out.format("%s   * An instance of the Values inner class whose\n", indent);
     out.format("%s   * methods return the AnnotationValues used to build this prism. \n", indent);
@@ -371,7 +373,7 @@ public final class PrismGenerator extends AbstractProcessor {
 
     // write Value class
     out.format("%s  /**\n", indent);
-    out.format("%s   * A class whose members corespond to those of %s\n", indent, annName);
+    out.format("%s   * A class whose members corespond to those of {@link %s @%s} \n", indent, annName, shortAnnName);
     out.format("%s   * but which each return the AnnotationValue corresponding to\n", indent);
     out.format("%s   * that member in the model of the annotations. Returns null for\n", indent);
     out.format("%s   * defaulted members. Used for Messager, so default values are not useful.\n", indent);
