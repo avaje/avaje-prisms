@@ -1,8 +1,8 @@
 package io.avaje.prisms;
 
-import io.avaje.prism.GenerateUtil;
+import io.avaje.prism.GenerateUtils;
 
-@GenerateUtil
+@GenerateUtils
 public class CommonClass {
 
   public void common() {

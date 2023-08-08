@@ -115,7 +115,7 @@ public final class PrismGenerator extends AbstractProcessor {
     final TypeElement a = elements.getTypeElement("io.avaje.prism.GeneratePrism");
     final TypeElement as = elements.getTypeElement("io.avaje.prism.GeneratePrisms");
 
-    renv.getElementsAnnotatedWith(elements.getTypeElement("io.avaje.prism.GenerateUtil")).stream()
+    renv.getElementsAnnotatedWith(elements.getTypeElement("io.avaje.prism.GenerateUtils")).stream()
         .findFirst()
         .ifPresent(
             x -> {
