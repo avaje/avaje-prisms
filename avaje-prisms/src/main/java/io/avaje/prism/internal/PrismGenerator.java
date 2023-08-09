@@ -115,6 +115,24 @@ public final class PrismGenerator extends AbstractProcessor {
     final TypeElement a = elements.getTypeElement("io.avaje.prism.GeneratePrism");
     final TypeElement as = elements.getTypeElement("io.avaje.prism.GeneratePrisms");
 
+    renv.getElementsAnnotatedWith(elements.getTypeElement("io.avaje.prism.GenerateUtils")).stream()
+        .findFirst()
+        .ifPresent(
+            x -> {
+              final var packageName = getPackageName(x);
+              final var name = "ProcessorUtils";
+              final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
+
+              try (var out =
+                  new PrintWriter(
+                      processingEnv.getFiler().createSourceFile(prismFqn).openWriter())) {
+
+                UtilWriter.write(out, packageName);
+              } catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+              }
+            });
+
     for (final Element e : renv.getElementsAnnotatedWith(a)) {
       final GeneratePrismPrism ann = GeneratePrismPrism.getInstanceOn(e);
       if (ann.isValid) {
@@ -240,6 +258,7 @@ public final class PrismGenerator extends AbstractProcessor {
       out.format("import java.util.List;\n");
       out.format("import java.util.Optional;\n");
       out.format("import java.util.Map;\n");
+      out.format("import javax.annotation.processing.Generated;\n");
       out.format("import javax.lang.model.element.AnnotationMirror;\n");
       out.format("import javax.lang.model.element.Element;\n");
       out.format("import javax.lang.model.element.VariableElement;\n");
@@ -253,6 +272,7 @@ public final class PrismGenerator extends AbstractProcessor {
 
       final String annName = ((TypeElement) typeMirror.asElement()).getQualifiedName().toString();
       out.format("/** A Prism representing a {@link %s @%s} annotation. */ \n", annName, Util.shortName(annName));
+      out.format("@Generated(\"avaje-prism-generator\")\n", annName, Util.shortName(annName));
       out.format("%sfinal class %s%s {\n", access, name, superClassString);
 
       // SHOULD make public only if the anotation says so, package by default.
