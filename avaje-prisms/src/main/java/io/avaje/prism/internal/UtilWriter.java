@@ -49,7 +49,7 @@ public class UtilWriter {
             + "   * @param type type string\n"
             + "   * @return boxed type string if type is primitive\n"
             + "   */\n"
-            + "  public static String getBoxedPrimitive(String type) {\n"
+            + "  public static String boxedPrimitive(String type) {\n"
             + "    final var wrapped = BOX_MAP.get(type);\n"
             + "    return wrapped != null ? \"java.lang.\" + wrapped : null;\n"
             + "  }\n"
