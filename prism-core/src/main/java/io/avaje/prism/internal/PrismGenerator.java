@@ -54,6 +54,7 @@ import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
@@ -72,7 +73,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-
+import io.avaje.spi.ServiceProvider;
 /**
  * An AnnotationProcessor for generating prisms. Do not use this class directly.
  *
@@ -82,6 +83,7 @@ import javax.tools.Diagnostic;
 //    @GeneratePrism(GeneratePrisms.class),
 //    @GeneratePrism(GeneratePrism.class)
 // })
+@ServiceProvider(Processor.class)
 @SupportedAnnotationTypes({"io.avaje.prism.GeneratePrism", "io.avaje.prism.GeneratePrisms"})
 public final class PrismGenerator extends AbstractProcessor {
 
