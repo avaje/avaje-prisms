@@ -22,6 +22,7 @@
   
 	<modules>
 	  <module>avaje-prisms</module>
+	  <module>prism-core</module>
 	</modules>
   
 	<profiles>
