@@ -1,6 +1,8 @@
 package io.avaje.prism.internal;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -24,6 +26,7 @@ final class ProcessingContext {
     private final Filer filer;
     private final Elements elementUtils;
     private final Types typeUtils;
+
     public Ctx(ProcessingEnvironment processingEnv) {
 
       messager = processingEnv.getMessager();
@@ -82,5 +85,24 @@ final class ProcessingContext {
 
   public static void clear() {
     CTX.remove();
+  }
+
+  static Filer filer() {
+    return CTX.get().filer;
+  }
+
+  public static boolean isAssignable2Interface(Element type, String superType) {
+    return Optional.ofNullable(type).stream()
+        .flatMap(ProcessingContext::superTypes)
+        .anyMatch(superType::equals);
+  }
+
+  public static Stream<String> superTypes(Element element) {
+    final var types = CTX.get().typeUtils;
+    return types.directSupertypes(element.asType()).stream()
+        .filter(type -> !type.toString().contains("java.lang.Object"))
+        .map(superType -> (TypeElement) types.asElement(superType))
+        .flatMap(e -> Stream.concat(superTypes(e), Stream.of(e)))
+        .map(Object::toString);
   }
 }

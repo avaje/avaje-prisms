@@ -37,12 +37,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package io.avaje.prism.internal;
 
 import static java.util.function.Predicate.not;
+import static io.avaje.prism.internal.ProcessingContext.isAssignable2Interface;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,6 +63,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
@@ -84,7 +87,14 @@ import io.avaje.spi.ServiceProvider;
 //    @GeneratePrism(GeneratePrism.class)
 // })
 @ServiceProvider(Processor.class)
-@SupportedAnnotationTypes({"io.avaje.prism.GeneratePrism", "io.avaje.prism.GeneratePrisms"})
+@SupportedAnnotationTypes({
+  "io.avaje.prism.GeneratePrism",
+  "io.avaje.prism.GeneratePrisms",
+  "io.avaje.prism.GenerateUtils",
+  "javax.annotation.processing.SupportedAnnotationTypes",
+  "javax.annotation.processing.SupportedOptions",
+  "javax.annotation.processing.SupportedSourceVersion"
+})
 public final class PrismGenerator extends AbstractProcessor {
 
   private final Map<String, TypeMirror> generated = new HashMap<>();
@@ -110,9 +120,22 @@ public final class PrismGenerator extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> tes, RoundEnvironment renv) {
     if (renv.processingOver()) {
+      ServiceWriter.write();
       ProcessingContext.clear();
       return true;
     }
+    tes.stream()
+        .map(renv::getElementsAnnotatedWith)
+        .map(ElementFilter::typesIn)
+        .flatMap(Collection::stream)
+        .filter(e -> !e.getModifiers().contains(Modifier.ABSTRACT))
+        .filter(
+            e ->
+                e.getKind() == ElementKind.CLASS
+                    && e.getKind() != ElementKind.ENUM
+                    && e.getKind() != ElementKind.INTERFACE)
+        .filter(e -> isAssignable2Interface(e, "javax.annotation.processing.Processor"))
+        .forEach(ServiceWriter::addProcessor);
 
     final TypeElement a = elements.getTypeElement("io.avaje.prism.GeneratePrism");
     final TypeElement as = elements.getTypeElement("io.avaje.prism.GeneratePrisms");
