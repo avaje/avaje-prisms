@@ -7,19 +7,7 @@
 
 Fork of the legendary [hickory annotation processor](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). Hickory has served pretty well since it was created in 2010, but it's unmaintained and doesn't have module support. 
 
-## Differences from Hickory
 
-- Upgrades from JDK 6 to 11
-- Adds modular support via module-info
-- `@GeneratedPrism` is now repeatable
-- Can choose what classes the generated Prisms inherit.
-- Generates an `isPresent` method to easily check if an element has the target annotation
-- Generates `Optional` factory methods  
-- Generates a `getAllInstances` method to retrieve a list of prisms from an element (`@Repeatable` annotations only)
-- Generates a `getAllOnMetaAnnotations` method to retrieve a list of prisms from an element's annotations (Meta annotations only)
-- Exposes the fully qualified type of the target annotation as a string.
-- `getInstance` returns null instead of throwing exceptions when the provided mirror doesn't match the prism target
-- null annotation array values are returned as empty lists
 
 ## What's a Prism?
 
@@ -56,8 +44,8 @@ module my.processor {
   requires static io.avaje.prisms;
 }
 ```
-#### 2. In your AP's pom.xml, replace `<compilerArgument>-proc:none</compilerArgument>` with this annotation processor
-
+#### 2. In your AP's pom.xml, delete `<compilerArgument>-proc:none</compilerArgument>` with this annotation processor
+if you have something like this in your pom file, you can take it out.
 ```xml
 <plugin>
   <groupId>org.apache.maven.plugins</groupId>
@@ -80,6 +68,7 @@ This ensures that only the prism generator will run at build time.
 ```java
 // package-info.java
 @GeneratePrism(MyExampleAnnotation.class)
+//@GenerateUtils optionally can add this to generate a helper class
 package org.example
 ```
 
@@ -98,6 +87,30 @@ exampleAnnotation.getValue()
     }
 ```
 
+### `META-INF/services` Generation
+Avaje prisms will try to detect your processor class and register an entry to `META-INF/services/javax.annotation.processing.Processor` after compilation. Doing this means you can omit the compiler plugin configuration/ (`<compilerArgument>-proc:none</compilerArgument>` and step 2 in the how to use section)   
+
+Services entries will be added if a concrete processor class has any of the following annotations:
+
+- Any avaje prisms annotation
+- `@SupportedAnnotationTypes`
+- `@SupportedOptions`
+- `@SupportedSourceVersion`
+
+## Differences from Hickory
+
+- Upgrades from JDK 6 to 11
+- Adds modular support via module-info
+- `@GeneratedPrism` is now repeatable
+- Can choose what classes the generated Prisms inherit.
+- Generates an `isPresent` method to check if an element has the target annotation easily
+- Generates `Optional` factory methods  
+- Generates a `getAllInstances` method to retrieve a list of prisms from an element (`@Repeatable` annotations only)
+- Generates a `getAllOnMetaAnnotations` method to retrieve a list of prisms from an element's annotations (Meta annotations only)
+- Exposes the fully qualified type of the target annotation as a string.
+- `getInstance` returns null instead of throwing exceptions when the provided mirror doesn't match the prism target
+- null annotation array values are returned as empty lists
+- 
 ## Related Works
 - [Pistachio](https://github.com/jstachio/pistachio)
 - [Mapstruct GemTools](https://github.com/mapstruct/tools-gem) ([Docs](https://mapstruct.org/news/2020-02-03-announcing-gem-tools/))
