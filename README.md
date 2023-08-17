@@ -44,8 +44,7 @@ module my.processor {
   requires static io.avaje.prisms;
 }
 ```
-#### 2. In your AP's pom.xml, delete `<compilerArgument>-proc:none</compilerArgument>` with this annotation processor
-if you have something like this in your pom file, you can take it out.
+#### 2. In your AP's pom.xml, replace `<compilerArgument>-proc:none</compilerArgument>` with this annotation processor
 ```xml
 <plugin>
   <groupId>org.apache.maven.plugins</groupId>
