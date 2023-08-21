@@ -87,7 +87,7 @@ exampleAnnotation.getValue()
 ```
 
 ### `META-INF/services` Generation
-Avaje prisms will try to detect your processor class and register an entry to `META-INF/services/javax.annotation.processing.Processor` after compilation. Doing this means you can omit the compiler plugin configuration/ (`<compilerArgument>-proc:none</compilerArgument>` and step 2 in the how to use section)   
+Avaje prisms will try to detect your processor class and register an entry to `META-INF/services/javax.annotation.processing.Processor` after compilation. Doing this means you can omit the compiler plugin configuration. (`<compilerArgument>-proc:none</compilerArgument>` and step 2 in the how to use section)   
 
 Services entries will be added if a concrete processor class has any of the following annotations:
 
@@ -109,7 +109,8 @@ Services entries will be added if a concrete processor class has any of the foll
 - Exposes the fully qualified type of the target annotation as a string.
 - `getInstance` returns null instead of throwing exceptions when the provided mirror doesn't match the prism target
 - null annotation array values are returned as empty lists
-- 
+- META-INF/services generation
+
 ## Related Works
 - [Pistachio](https://github.com/jstachio/pistachio)
 - [Mapstruct GemTools](https://github.com/mapstruct/tools-gem) ([Docs](https://mapstruct.org/news/2020-02-03-announcing-gem-tools/))
