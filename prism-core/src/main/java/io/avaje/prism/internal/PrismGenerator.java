@@ -91,6 +91,7 @@ import io.avaje.spi.ServiceProvider;
   "io.avaje.prism.GeneratePrism",
   "io.avaje.prism.GeneratePrisms",
   "io.avaje.prism.GenerateUtils",
+  "io.avaje.prism.AnnotationProcessor",
   "javax.annotation.processing.SupportedAnnotationTypes",
   "javax.annotation.processing.SupportedOptions",
   "javax.annotation.processing.SupportedSourceVersion"
