@@ -78,8 +78,7 @@ final class ServiceWriter {
 
     var module = getProjectModuleElement();
     if (module != null && !module.isUnnamed()) {
-      final Set<String> missingServices =
-          services.stream().map(ProcessorUtils::shortType).collect(toSet());
+      final Set<String> missingServices = services.stream().map(Util::shortName).collect(toSet());
 
       try (var reader = getModuleInfoReader(); ) {
 
