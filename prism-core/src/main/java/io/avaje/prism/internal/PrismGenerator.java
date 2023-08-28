@@ -125,6 +125,9 @@ public final class PrismGenerator extends AbstractProcessor {
       ProcessingContext.clear();
       return true;
     }
+
+    ProcessingContext.setProjectModuleElement(tes, renv);
+
     tes.stream()
         .map(renv::getElementsAnnotatedWith)
         .map(ElementFilter::typesIn)

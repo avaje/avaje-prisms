@@ -1,13 +1,19 @@
 package io.avaje.prism.internal;
 
+import static java.util.function.Predicate.not;
+
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -26,6 +32,7 @@ final class ProcessingContext {
     private final Filer filer;
     private final Elements elementUtils;
     private final Types typeUtils;
+    private ModuleElement module;
 
     public Ctx(ProcessingEnvironment processingEnv) {
 
@@ -51,6 +58,10 @@ final class ProcessingContext {
 
   static void logWarn(String msg, Object... args) {
     CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, String.format(msg, args));
+  }
+
+  static void logWarn(Element e, String msg, Object... args) {
+    CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, String.format(msg, args), e);
   }
 
   static void logDebug(String msg, Object... args) {
@@ -104,5 +115,23 @@ final class ProcessingContext {
         .map(superType -> (TypeElement) types.asElement(superType))
         .flatMap(e -> Stream.concat(superTypes(e), Stream.of(e)))
         .map(Object::toString);
+  }
+
+  public static void setProjectModuleElement(
+      Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    if (CTX.get().module == null) {
+      CTX.get().module =
+          annotations.stream()
+              .map(roundEnv::getElementsAnnotatedWith)
+              .filter(not(Collection::isEmpty))
+              .findAny()
+              .map(s -> s.iterator().next())
+              .map(CTX.get().elementUtils::getModuleOf)
+              .orElse(null);
+    }
+  }
+
+  public static ModuleElement getProjectModuleElement() {
+    return CTX.get().module;
   }
 }
