@@ -4,6 +4,8 @@ import static io.avaje.prism.internal.APContext.jdkVersion;
 
 import java.io.PrintWriter;
 
+import javax.lang.model.element.TypeElement;
+
 public class APContextWriter {
   private APContextWriter() {}
 
@@ -238,9 +240,9 @@ public class APContextWriter {
             + "   * @param t the type to map to an element\n"
             + "   * @return the element corresponding to the given type\n"
             + "   */\n"
-            + "  public static Element asElement(TypeMirror t) {\n"
+            + "  public static TypeElement asElement(TypeMirror t) {\n"
             + "\n"
-            + "    return types().asElement(t);\n"
+            + "    return (TypeElement) types().asElement(t);\n"
             + "  }\n"
             + "\n"
             + "  /**\n"
