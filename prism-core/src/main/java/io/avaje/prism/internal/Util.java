@@ -1,6 +1,6 @@
 package io.avaje.prism.internal;
 
-import static io.avaje.prism.internal.ProcessingContext.asElement;
+import static io.avaje.prism.internal.APContext.asElement;
 
 import javax.lang.model.type.TypeMirror;
 

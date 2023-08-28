@@ -1,10 +1,11 @@
 package io.avaje.prism.internal;
 
-import static io.avaje.prism.internal.ProcessingContext.filer;
-import static io.avaje.prism.internal.ProcessingContext.getProjectModuleElement;
-import static io.avaje.prism.internal.ProcessingContext.logDebug;
-import static io.avaje.prism.internal.ProcessingContext.logError;
-import static io.avaje.prism.internal.ProcessingContext.logWarn;
+import static io.avaje.prism.internal.APContext.filer;
+import static io.avaje.prism.internal.APContext.getModuleInfoReader;
+import static io.avaje.prism.internal.APContext.getProjectModuleElement;
+import static io.avaje.prism.internal.APContext.logError;
+import static io.avaje.prism.internal.APContext.logNote;
+import static io.avaje.prism.internal.APContext.logWarn;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.BufferedReader;
@@ -58,7 +59,7 @@ final class ServiceWriter {
               + x);
     }
     try {
-      logDebug("Writing META-INF/services/%s", PROCESSOR);
+      logNote("Writing META-INF/services/%s", PROCESSOR);
       final FileObject f =
           filer.createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/services/" + PROCESSOR);
       final PrintWriter pw = new PrintWriter(new OutputStreamWriter(f.openOutputStream(), "UTF-8"));
@@ -118,16 +119,6 @@ final class ServiceWriter {
 
     services.clear();
     foundServiceImpls.clear();
-  }
-
-  private static BufferedReader getModuleInfoReader() throws IOException {
-    var inputStream =
-        filer()
-            .getResource(StandardLocation.SOURCE_PATH, "", "module-info.java")
-            .toUri()
-            .toURL()
-            .openStream();
-    return new BufferedReader(new InputStreamReader(inputStream));
   }
 
   private static void processLine(String line, Set<String> missingServices) {

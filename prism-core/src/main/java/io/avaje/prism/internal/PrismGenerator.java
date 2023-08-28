@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package io.avaje.prism.internal;
 
 import static java.util.function.Predicate.not;
-import static io.avaje.prism.internal.ProcessingContext.isAssignable2Interface;
+import static io.avaje.prism.internal.APContext.isAssignable;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -91,6 +91,7 @@ import io.avaje.spi.ServiceProvider;
   "io.avaje.prism.GeneratePrism",
   "io.avaje.prism.GeneratePrisms",
   "io.avaje.prism.GenerateUtils",
+  "io.avaje.prism.GenerateAPContext",
   "io.avaje.prism.AnnotationProcessor",
   "javax.annotation.processing.SupportedAnnotationTypes",
   "javax.annotation.processing.SupportedOptions",
@@ -110,7 +111,7 @@ public final class PrismGenerator extends AbstractProcessor {
     super.init(env);
     this.elements = env.getElementUtils();
     this.types = env.getTypeUtils();
-    ProcessingContext.init(env);
+    APContext.init(env);
   }
 
   @Override
@@ -122,11 +123,11 @@ public final class PrismGenerator extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> tes, RoundEnvironment renv) {
     if (renv.processingOver()) {
       ServiceWriter.write();
-      ProcessingContext.clear();
+      APContext.clear();
       return true;
     }
 
-    ProcessingContext.setProjectModuleElement(tes, renv);
+    APContext.setProjectModuleElement(tes, renv);
 
     tes.stream()
         .map(renv::getElementsAnnotatedWith)
@@ -138,7 +139,7 @@ public final class PrismGenerator extends AbstractProcessor {
                 e.getKind() == ElementKind.CLASS
                     && e.getKind() != ElementKind.ENUM
                     && e.getKind() != ElementKind.INTERFACE)
-        .filter(e -> isAssignable2Interface(e, "javax.annotation.processing.Processor"))
+        .filter(e -> isAssignable(e, "javax.annotation.processing.Processor"))
         .forEach(ServiceWriter::addProcessor);
 
     final TypeElement a = elements.getTypeElement("io.avaje.prism.GeneratePrism");
@@ -150,6 +151,26 @@ public final class PrismGenerator extends AbstractProcessor {
             x -> {
               final var packageName = getPackageName(x);
               final var name = "ProcessorUtils";
+              final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
+
+              try (var out =
+                  new PrintWriter(
+                      processingEnv.getFiler().createSourceFile(prismFqn).openWriter())) {
+
+                UtilWriter.write(out, packageName);
+              } catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+              }
+            });
+
+    renv
+        .getElementsAnnotatedWith(elements.getTypeElement("io.avaje.prism.GenerateAPContext"))
+        .stream()
+        .findFirst()
+        .ifPresent(
+            x -> {
+              final var packageName = getPackageName(x);
+              final var name = "APContext";
               final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
 
               try (var out =
@@ -500,7 +521,7 @@ public final class PrismGenerator extends AbstractProcessor {
           }
         }
       } else {
-        ProcessingContext.logDebug("Unprocessed type" + type);
+        APContext.logNote("Unprocessed type" + type);
       }
     }
     return result;
