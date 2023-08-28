@@ -214,7 +214,7 @@ public final class APContext {
    * @param t the type to map to an element
    * @return the element corresponding to the given type
    */
-  public static TypeElement asElement(TypeMirror t) {
+  public static TypeElement asTypeElement(TypeMirror t) {
 
     return (TypeElement) types().asElement(t);
   }

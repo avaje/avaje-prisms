@@ -240,7 +240,7 @@ public class APContextWriter {
             + "   * @param t the type to map to an element\n"
             + "   * @return the element corresponding to the given type\n"
             + "   */\n"
-            + "  public static TypeElement asElement(TypeMirror t) {\n"
+            + "  public static TypeElement asTypeElement(TypeMirror t) {\n"
             + "\n"
             + "    return (TypeElement) types().asElement(t);\n"
             + "  }\n"
