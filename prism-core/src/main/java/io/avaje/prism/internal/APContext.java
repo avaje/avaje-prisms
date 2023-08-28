@@ -90,7 +90,7 @@ public final class APContext {
    * Initialize the ThreadLocal containing the {@link ProcessingEnvironment}. Be sure to run the
    * clear method at the last round of processing
    *
-   * @param processingEnv the current annotation processing enviroment
+   * @param context the current annotation processing enviroment
    */
   public static void init(Ctx context) {
     CTX.set(context);

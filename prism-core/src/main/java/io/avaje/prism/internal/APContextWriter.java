@@ -110,7 +110,7 @@ public class APContextWriter {
             + "   * Initialize the ThreadLocal containing the {@link ProcessingEnvironment}. Be sure to run the\n"
             + "   * clear method at the last round of processing\n"
             + "   *\n"
-            + "   * @param processingEnv the current annotation processing enviroment\n"
+            + "   * @param context the current annotation processing enviroment\n"
             + "   * @param jdkVersion the JDK version number\n"
             + "   * @param preview whether preview features are enabled\n"
             + "   */\n"
