@@ -25,7 +25,7 @@ import javax.tools.StandardLocation;
 final class ServiceWriter {
 
   private static final Set<String> services = new HashSet<>();
-  private static final Set<String> found = new HashSet<>();
+  private static final Set<String> foundServiceImpls = new HashSet<>();
 
   private static final String PROCESSOR = "javax.annotation.processing.Processor";
 
@@ -78,7 +78,7 @@ final class ServiceWriter {
 
     var module = getProjectModuleElement();
     if (module != null && !module.isUnnamed()) {
-      final Set<String> missingServices = services.stream().map(Util::shortName).collect(toSet());
+      final Set<String> missingServiceImpls = services.stream().map(Util::shortName).collect(toSet());
 
       try (var reader = getModuleInfoReader(); ) {
 
@@ -91,7 +91,7 @@ final class ServiceWriter {
           }
 
           if (inProvides) {
-            processLine(line, missingServices);
+            processLine(line, missingServiceImpls);
           }
 
           if (!inProvides || line.isBlank()) {
@@ -106,7 +106,7 @@ final class ServiceWriter {
             break;
           }
         }
-        if (!missingServices.isEmpty()) {
+        if (!missingServiceImpls.isEmpty()) {
           logError(
               module, "Missing `provides %s with %s;`", PROCESSOR, String.join(", ", services));
         }
@@ -117,7 +117,7 @@ final class ServiceWriter {
     }
 
     services.clear();
-    found.clear();
+    foundServiceImpls.clear();
   }
 
   private static BufferedReader getModuleInfoReader() throws IOException {
@@ -132,19 +132,17 @@ final class ServiceWriter {
 
   private static void processLine(String line, Set<String> missingServices) {
 
-    if (!found.containsAll(missingServices)) {
-      findMissingStrings(line, missingServices);
+    if (!foundServiceImpls.containsAll(missingServices)) {
+      parseServices(line, missingServices);
     }
-    if (!found.isEmpty()) {
-      missingServices.removeAll(found);
-    }
+    missingServices.removeAll(foundServiceImpls);
   }
 
-  private static void findMissingStrings(String input, Set<String> missingServices) {
+  private static void parseServices(String input, Set<String> missingServices) {
 
     for (var str : missingServices) {
       if (input.contains(str)) {
-        found.add(str);
+        foundServiceImpls.add(str);
       }
     }
   }
