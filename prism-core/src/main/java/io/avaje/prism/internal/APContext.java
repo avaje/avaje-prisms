@@ -26,7 +26,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
 /**
- * Utiliy Class that stores the {@link ProcessingEnvironment} and provides various helper methods
+ * Utility class that stores the {@link ProcessingEnvironment} and provides various helper methods
  */
 @Generated("avaje-prism-generator")
 public final class APContext {

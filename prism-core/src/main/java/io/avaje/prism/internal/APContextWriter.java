@@ -1,12 +1,29 @@
 package io.avaje.prism.internal;
 
+import static io.avaje.prism.internal.APContext.jdkVersion;
+
 import java.io.PrintWriter;
 
 public class APContextWriter {
   private APContextWriter() {}
 
-  public static void write(PrintWriter out, String packageName) {
+  private static String preview() {
+    if (jdkVersion() >= 13) {
+      return "    previewEnabled = processingEnv.isPreviewEnabled();\n";
+    }
+    return "    previewEnabled = jdkVersion >= 13 && initPreviewEnabled(processingEnv);\n"
+        + "  }\n"
+        + "\n"
+        + "  private static boolean initPreviewEnabled(ProcessingEnvironment processingEnv) {\n"
+        + "    try {\n"
+        + "      return (boolean)\n"
+        + "          ProcessingEnvironment.class.getDeclaredMethod(\"isPreviewEnabled\").invoke(processingEnv);\n"
+        + "    } catch (final Throwable e) {\n"
+        + "      return false;\n"
+        + "    }\n";
+  }
 
+  public static void write(PrintWriter out, String packageName) {
     out.append(
         "package "
             + packageName
@@ -86,16 +103,7 @@ public class APContextWriter {
             + "  public static void init(ProcessingEnvironment processingEnv) {\n"
             + "    CTX.set(new Ctx(processingEnv));\n"
             + "    jdkVersion = processingEnv.getSourceVersion().ordinal();\n"
-            + "    previewEnabled = jdkVersion >= 13 && initPreviewEnabled(processingEnv);\n"
-            + "  }\n"
-            + "\n"
-            + "  private static boolean initPreviewEnabled(ProcessingEnvironment processingEnv) {\n"
-            + "    try {\n"
-            + "      return (boolean)\n"
-            + "          ProcessingEnvironment.class.getDeclaredMethod(\"isPreviewEnabled\").invoke(processingEnv);\n"
-            + "    } catch (final Throwable e) {\n"
-            + "      return false;\n"
-            + "    }\n"
+            + preview()
             + "  }\n"
             + "\n"
             + "  /**\n"
@@ -103,10 +111,14 @@ public class APContextWriter {
             + "   * clear method at the last round of processing\n"
             + "   *\n"
             + "   * @param processingEnv the current annotation processing enviroment\n"
+            + "   * @param jdkVersion the JDK version number\n"
+            + "   * @param preview whether preview features are enabled\n"
             + "   */\n"
-            + "  public static void init(Ctx context) {\n"
+            + "  public static void init(Ctx context, int jdkVersion, boolean preview) {\n"
             + "    CTX.set(context);\n"
-            + "  }\n"
+            + "    jdkVersion = jdkVersion;\n"
+            + "    previewEnabled = preview;\n"
+            + "  }"
             + "\n"
             + "  /** Clears the ThreadLocal containing the {@link ProcessingEnvironment}. */\n"
             + "  public static void clear() {\n"

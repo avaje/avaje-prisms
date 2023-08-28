@@ -177,7 +177,7 @@ public final class PrismGenerator extends AbstractProcessor {
                   new PrintWriter(
                       processingEnv.getFiler().createSourceFile(prismFqn).openWriter())) {
 
-                UtilWriter.write(out, packageName);
+                APContextWriter.write(out, packageName);
               } catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
               }
