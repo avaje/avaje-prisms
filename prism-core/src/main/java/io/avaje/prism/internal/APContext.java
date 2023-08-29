@@ -29,7 +29,7 @@ import javax.tools.StandardLocation;
  * Utility class that stores the {@link ProcessingEnvironment} and provides various helper methods
  */
 @Generated("avaje-prism-generator")
-public final class APContext {
+final class APContext {
 
   private static int jdkVersion;
   private static boolean previewEnabled;
