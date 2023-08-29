@@ -100,6 +100,9 @@ final class ServiceWriter {
               logWarn(
                   module, "`requires io.avaje.prism` should be `requires static io.avaje.prism;`");
             }
+            if (line.contains("io.avaje.prism.core")) {
+              logWarn(module, "io.avaje.prism.core should be not be used directly");
+            }
             continue;
           }
 
