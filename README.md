@@ -91,6 +91,35 @@ Avaje prisms will try to detect your processor class and register an entry to `M
 
 Services entries will be added if a concrete processor class has any of the following annotations:
 
+- Any avaje prism annotation
+- `@SupportedAnnotationTypes`
+- `@SupportedOptions`
+- `@SupportedSourceVersion`
+
+### `@GenerateAPContext`
+If you add the annotation, [this Helper Class](https://github.com/SentryMan/avaje-prisms/blob/context/prism-core/src/main/java/io/avaje/prism/internal/APContext.java) will be generated into your project to allow you to access the processing environment statically from anywhere.
+
+To initialize/cleanup do the below: 
+```java
+@GenerateAPContext
+public final class MyProcessor extends AbstractProcessor {
+
+  @Override
+  public synchronized void init(ProcessingEnvironment env) {
+    super.init(env);
+    APContext.init(env);
+  }
+
+  @Override
+  public boolean process(Set<? extends TypeElement> tes, RoundEnvironment renv) {
+    if (renv.processingOver()) {
+      APContext.clear();
+      return true;
+    }
+    //do whatever processing you need
+  }
+}
+```
 - Any avaje prisms annotation
 - `@SupportedAnnotationTypes`
 - `@SupportedOptions`
