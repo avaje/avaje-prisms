@@ -80,7 +80,7 @@ MyExampleAnnotationPrism exampleAnnotation = MyExampleAnnotationPrism.getInstanc
 //can get the original annotation type as a string
 String annotationQualifiedType = MyExampleAnnotationPrism.PRISM_TYPE
 
-//can easily retrive the annotation values as if the annotation was present on the classpath.
+//can easily retrieve the annotation values as if the annotation was present on the classpath.
 exampleAnnotation.getValue()
   ...
     }
@@ -97,9 +97,9 @@ Services entries will be added if a concrete processor class has any of the foll
 - `@SupportedSourceVersion`
 
 ### `@GenerateAPContext`
-If you add the annotation, [this Helper Class](https://github.com/SentryMan/avaje-prisms/blob/context/prism-core/src/main/java/io/avaje/prism/internal/APContext.java) will be generated into your project to allow you to access the processing environment statically from anywhere.
+If you add the annotation, [this Helper Class](https://github.com/avaje/avaje-prisms/blob/main/prism-core/src/main/java/io/avaje/prism/internal/APContext.java) will be generated into your project to allow you to access the processing environment statically from anywhere.
 
-To initialize/cleanup do the below: 
+To initialize/cleanup the generated `APContext` do the below: 
 ```java
 @GenerateAPContext
 public final class MyProcessor extends AbstractProcessor {
