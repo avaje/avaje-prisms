@@ -93,7 +93,7 @@ public class FactoryMethodWriter {
 
     // getOptionalOn
     out.format("%s  /** Return a Optional representing a nullable {@link %s @%s} annotation on the given element. \n", indent, annName, annShortName, annName, annShortName);
-    out.format("%s   * similar to {@link element.getAnnotation(%s.class)} except that \n", indent, annName);
+    out.format("%s   * similar to {@code element.getAnnotation(%s.class)} except that \n", indent, annName);
     out.format("%s   * an Optional of this class rather than an instance of {@link %s}\n", indent, annName);
     out.format("%s   * is returned.\n", indent);
 	out.format("%s   *\n", indent);
@@ -174,10 +174,9 @@ public class FactoryMethodWriter {
   }
 
   private void writeGetOptional() {
-
     // getOptional
     out.format("%s  /** Return an Optional representing a nullable {@link %s @%s} from an annotation mirror. \n", indent, name, prismShortName, annName, annShortName);
-    out.format("%s   * similar to {@link e.getAnnotation(%s.class)} except that \n", indent, annName);
+    out.format("%s   * similar to {@code e.getAnnotation(%s.class)} except that \n", indent, annName);
     out.format("%s   * an Optional of this class rather than an instance of {@link %s @%s}\n", indent, annName, annShortName);
     out.format("%s   * is returned.\n", indent);
 	out.format("%s   *\n", indent);
