@@ -64,7 +64,7 @@ public class TestProcessor extends AbstractProcessor {
     var map = typeUseFields.get(0);
     assertThat(map.full())
         .isEqualTo(
-            "@io.avaje.validation.constraints.NotEmpty @io.avaje.validation.constraints.NotBlank java.util.Map<@io.avaje.validation.constraints.NotBlank(groups={io.avaje.prisms.test.context.V4Rusty.Weapon.class}) java.lang.String, @io.avaje.validation.constraints.NotEmpty(groups={io.avaje.prisms.test.context.V4Rusty.Weapon.class}) java.util.Map<io.avaje.prisms.test.context.V4Rusty.@io.avaje.validation.constraints.NotBlank(groups={io.avaje.prisms.test.context.V4Rusty.Weapon.class}) Weapon, io.avaje.prisms.test.context.@io.avaje.validation.constraints.NotBlank V4Rusty>>");
+            "@jakarta.validation.constraints.NotEmpty @jakarta.validation.constraints.NotBlank java.util.Map<@jakarta.validation.constraints.NotBlank(groups={io.avaje.prisms.test.context.V4Rusty.Weapon.class}) java.lang.String, @jakarta.validation.constraints.NotEmpty(groups={io.avaje.prisms.test.context.V4Rusty.Weapon.class}) java.util.Map<io.avaje.prisms.test.context.V4Rusty.@jakarta.validation.constraints.NotBlank(groups={io.avaje.prisms.test.context.V4Rusty.Weapon.class}) Weapon, io.avaje.prisms.test.context.@jakarta.validation.constraints.NotBlank V4Rusty>>");
 
     assertThat(map.shortType())
         .isEqualTo(
