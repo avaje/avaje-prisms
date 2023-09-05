@@ -1,4 +1,4 @@
-package io.avaje.prisms;
+package io.avaje.prisms.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

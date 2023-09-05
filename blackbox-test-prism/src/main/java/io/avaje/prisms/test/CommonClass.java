@@ -1,4 +1,4 @@
-package io.avaje.prisms;
+package io.avaje.prisms.test;
 
 import io.avaje.prism.GenerateAPContext;
 import io.avaje.prism.GenerateUtils;

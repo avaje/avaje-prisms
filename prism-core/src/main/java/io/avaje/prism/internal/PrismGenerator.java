@@ -150,14 +150,26 @@ public final class PrismGenerator extends AbstractProcessor {
         .ifPresent(
             x -> {
               final var packageName = getPackageName(x);
-              final var name = "ProcessorUtils";
-              final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
+              var utils = "ProcessorUtils";
+              var nameUType = "UType";
+              var nameVisitor = "TypeMirrorVisitor";
+              utils = "".equals(packageName) ? utils : packageName + "." + utils;
+              nameUType = "".equals(packageName) ? nameUType : packageName + "." + nameUType;
+              nameVisitor = "".equals(packageName) ? nameVisitor : packageName + "." + nameVisitor;
 
               try (var out =
-                  new PrintWriter(
-                      processingEnv.getFiler().createSourceFile(prismFqn).openWriter())) {
+                      new PrintWriter(
+                          processingEnv.getFiler().createSourceFile(utils).openWriter());
+                  var utype =
+                      new PrintWriter(
+                          processingEnv.getFiler().createSourceFile(nameUType).openWriter());
+                  var visitor =
+                      new PrintWriter(
+                          processingEnv.getFiler().createSourceFile(nameVisitor).openWriter())) {
 
                 UtilWriter.write(out, packageName);
+                UTypeWriter.write(utype, packageName);
+                VisitorWriter.write(visitor, packageName);
               } catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
               }
