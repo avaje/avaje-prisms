@@ -7,8 +7,8 @@ import io.avaje.prisms.test.CommonInterface;
 import io.avaje.prisms.test.CommonInterface2;
 import io.avaje.prisms.test.TestAnnotation;
 import io.avaje.prisms.test.context.V4Rusty.Weapon;
-import io.avaje.validation.constraints.NotBlank;
-import io.avaje.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 @TestAnnotation
 public class TypeUse<T extends CommonInterface & CommonInterface2> {
