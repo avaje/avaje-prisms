@@ -4,8 +4,6 @@ import static io.avaje.prism.internal.APContext.jdkVersion;
 
 import java.io.PrintWriter;
 
-import javax.lang.model.element.TypeElement;
-
 public class APContextWriter {
   private APContextWriter() {}
 
@@ -208,6 +206,21 @@ public class APContextWriter {
             + "    messager().printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));\n"
             + "  }\n"
             + "\n"
+            + "  /**\n"
+            + "   * Returns the elements annotated with the given annotation interface.\n"
+            + "   *\n"
+            + "   * @param round RoundEnviroment to extract the elements\n"
+            + "   * @param annotationFQN the fqn of the annotation\n"
+            + "   * @return the elements annotated with the given annotation interface,or an empty set if there are\n"
+            + "   *     none\n"
+            + "   */\n"
+            + "  public static Set<? extends Element> elementsAnnotatedWith(\n"
+            + "      RoundEnvironment round, String annotationFQN) {\n"
+            + "\n"
+            + "    return Optional.ofNullable(typeElement(annotationFQN))\n"
+            + "        .map(round::getElementsAnnotatedWith)\n"
+            + "        .orElse(Set.of());\n"
+            + "  }\n\n"
             + "  /**\n"
             + "   * Create a file writer for the given class name.\n"
             + "   *\n"
