@@ -92,6 +92,7 @@ import io.avaje.spi.ServiceProvider;
   "io.avaje.prism.GeneratePrisms",
   "io.avaje.prism.GenerateUtils",
   "io.avaje.prism.GenerateAPContext",
+  "io.avaje.prism.GenerateModuleInfoReader",
   "io.avaje.prism.AnnotationProcessor",
   "javax.annotation.processing.SupportedAnnotationTypes",
   "javax.annotation.processing.SupportedOptions",
@@ -190,6 +191,27 @@ public final class PrismGenerator extends AbstractProcessor {
                       processingEnv.getFiler().createSourceFile(prismFqn).openWriter())) {
 
                 APContextWriter.write(out, packageName);
+              } catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+              }
+            });
+
+    renv
+        .getElementsAnnotatedWith(
+            elements.getTypeElement("io.avaje.prism.GenerateModuleInfoReader"))
+        .stream()
+        .findFirst()
+        .ifPresent(
+            x -> {
+              final var packageName = getPackageName(x);
+              final var name = "ModuleInfoReader";
+              final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
+
+              try (var out =
+                  new PrintWriter(
+                      processingEnv.getFiler().createSourceFile(prismFqn).openWriter())) {
+
+                ModuleInfoReaderWriter.write(out, packageName);
               } catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
               }
