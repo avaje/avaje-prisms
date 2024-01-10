@@ -2,6 +2,8 @@ package io.avaje.prism.internal;
 
 import java.io.PrintWriter;
 
+import javax.annotation.processing.Generated;
+
 public class UTypeWriter {
   private UTypeWriter() {}
 
@@ -20,6 +22,7 @@ public class UTypeWriter {
             + "import javax.lang.model.type.TypeMirror;\n"
             + "\n"
             + "/** Utility type to help process {@link TypeMirror}s */\n"
+            + "@Generated(\"avaje-prism-generator\")\n"
             + "public interface UType {\n"
             + "\n"
             + "  /**\n"
