@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 @TestAnnotation
-public class TypeUse<T extends CommonInterface & CommonInterface2> {
+public class UTypeTester<T extends CommonInterface & CommonInterface2> {
 
   @NotEmpty @NotBlank
   Map<
@@ -25,7 +25,5 @@ public class TypeUse<T extends CommonInterface & CommonInterface2> {
   List<? extends Object> extendWild;
   List<?> wild;
 
-  <T2 extends CommonInterface> T2 test() {
-    return null;
-  }
+  void testVoid(@NotEmpty(groups = int[].class) int[] param) {}
 }
