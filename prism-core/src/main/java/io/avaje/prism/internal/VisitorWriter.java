@@ -364,7 +364,6 @@ public class VisitorWriter {
             + "  public StringBuilder visitNoType(NoType t, StringBuilder p) {\n"
             + "    kind = t.getKind();\n"
             + "    mainType = t.toString();\n"
-            + "    fullType = mainType;\n"
             + "    return p.append(mainType);\n"
             + "  }\n"
             + "\n"
