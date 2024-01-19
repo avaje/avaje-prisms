@@ -114,7 +114,7 @@ public final class MyProcessor extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> tes, RoundEnvironment renv) {
     if (renv.processingOver()) {
       APContext.clear();
-      return true;
+      return false;
     }
     //do whatever processing you need
   }
