@@ -120,11 +120,6 @@ public final class MyProcessor extends AbstractProcessor {
   }
 }
 ```
-- Any avaje prisms annotation
-- `@SupportedAnnotationTypes`
-- `@SupportedOptions`
-- `@SupportedSourceVersion`
-
 ## Differences from Hickory
 
 - Upgrades from JDK 6 to 11
