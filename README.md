@@ -1,9 +1,11 @@
+[![Discord](https://img.shields.io/discord/1074074312421683250?color=%237289da&label=discord)](https://discord.gg/Qcqf9R27BR)
 [![Build](https://github.com/avaje/avaje-prisms/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-prisms/actions/workflows/build.yml)
 [![JDK EA](https://github.com/avaje/avaje-prisms/actions/workflows/jdk-ea.yml/badge.svg)](https://github.com/avaje/avaje-prisms/actions/workflows/jdk-ea.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-prisms/blob/master/LICENSE)
 [![Maven Central : avaje-prisms](https://maven-badges.herokuapp.com/maven-central/io.avaje/avaje-prisms/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.avaje/avaje-prisms)
+[![javadoc](https://javadoc.io/badge2/io.avaje/avaje-prisms/javadoc.svg?color=purple)](https://javadoc.io/doc/io.avaje/avaje-prisms)
 
-# Avaje Prisms
+# [Avaje Prisms](https://avaje.io/prisms/)
 
 Fork of the legendary [hickory annotation processor](https://javadoc.io/static/com.jolira/hickory/1.0.0/net/java/dev/hickory/prism/package-summary.html). Hickory has served pretty well since it was created in 2010, but it's unmaintained and doesn't have module support. 
 
