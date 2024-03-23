@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * detected on a concrete processor class.
  *
  * <ul>
- *   <li>Any avaje prism annotations
+ *   <li>Any avaje prism annotation
  *   <li>{@link javax.annotation.processing.SupportedAnnotationTypes @SupportedAnnotationTypes}
  *   <li>{@link javax.annotation.processing.SupportedOptions @SupportedOptions}
  *   <li>{@link javax.annotation.processing.SupportedSourceVersion @SupportedSourceVersion}
