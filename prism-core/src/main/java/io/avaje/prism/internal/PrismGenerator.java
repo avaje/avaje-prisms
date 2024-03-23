@@ -477,7 +477,7 @@ public final class PrismGenerator extends AbstractProcessor {
 
     // write Value class
     out.format("%s  /**\n", indent);
-    out.format("%s   * A class whose members corespond to those of {@link %s @%s} \n", indent, annName, shortAnnName);
+    out.format("%s   * A class whose members correspond to those of {@link %s @%s} \n", indent, annName, shortAnnName);
     out.format("%s   * but which each return the AnnotationValue corresponding to\n", indent);
     out.format("%s   * that member in the model of the annotations. Returns null for\n", indent);
     out.format("%s   * defaulted members. Used for Messager, so default values are not useful.\n", indent);
