@@ -6,7 +6,6 @@ import static io.avaje.prism.internal.APContext.getProjectModuleElement;
 import static io.avaje.prism.internal.APContext.logError;
 import static io.avaje.prism.internal.APContext.logNote;
 import static io.avaje.prism.internal.APContext.logWarn;
-import static java.util.stream.Collectors.toSet;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -26,8 +25,6 @@ import javax.tools.StandardLocation;
 final class ServiceWriter {
 
   private static final Set<String> services = new HashSet<>();
-  private static final Set<String> foundServiceImpls = new HashSet<>();
-
   private static final String PROCESSOR = "javax.annotation.processing.Processor";
 
   static void addProcessor(TypeElement e) {
@@ -79,23 +76,12 @@ final class ServiceWriter {
 
     var module = getProjectModuleElement();
     if (module != null && !module.isUnnamed()) {
-      final Set<String> missingServiceImpls = services.stream().map(Util::shortName).collect(toSet());
-
       try (var reader = getModuleInfoReader(); ) {
 
-        boolean inProvides = false;
         String line;
         while ((line = reader.readLine()) != null) {
 
-          if (line.contains("provides") && line.contains("Processor")) {
-            inProvides = true;
-          }
-
-          if (inProvides) {
-            processLine(line, missingServiceImpls);
-          }
-
-          if (!inProvides || line.isBlank()) {
+          if (line.isBlank()) {
             if (line.contains("io.avaje.prism") && !line.contains("static")) {
               logWarn(
                   module, "`requires io.avaje.prism` should be `requires static io.avaje.prism;`");
@@ -105,39 +91,12 @@ final class ServiceWriter {
             }
             continue;
           }
-
-          if (line.contains(";")) {
-            break;
-          }
-        }
-        if (!missingServiceImpls.isEmpty()) {
-          logError(
-              module, "Missing `provides %s with %s;`", PROCESSOR, String.join(", ", services));
         }
 
       } catch (Exception e) {
         // can't read module
       }
     }
-
     services.clear();
-    foundServiceImpls.clear();
-  }
-
-  private static void processLine(String line, Set<String> missingServices) {
-
-    if (!foundServiceImpls.containsAll(missingServices)) {
-      parseServices(line, missingServices);
-    }
-    missingServices.removeAll(foundServiceImpls);
-  }
-
-  private static void parseServices(String input, Set<String> missingServices) {
-
-    for (var str : missingServices) {
-      if (input.contains(str)) {
-        foundServiceImpls.add(str);
-      }
-    }
   }
 }
