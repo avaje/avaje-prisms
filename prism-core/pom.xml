@@ -16,9 +16,7 @@
 	<dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-spi-service</artifactId>
-      <version>1.4</version>
-      <optional>true</optional>
-      <scope>provided</scope>
+      <version>1.7</version>
     </dependency>
   </dependencies>
 </project>
