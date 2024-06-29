@@ -406,7 +406,7 @@ public class APContextWriter {
             + "      updatedPath.getParent().toFile().mkdirs();\n"
             + "    }\n"
             + "    return updatedPath;\n"
-            + "  }"
+            + "  }\n"
             + "}\n"
             + "");
   }
