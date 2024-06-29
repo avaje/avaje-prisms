@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package io.avaje.prism.internal;
 
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.joining;
 import static io.avaje.prism.internal.APContext.isAssignable;
 
 import java.io.IOException;
@@ -53,6 +54,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 import java.util.Optional;
 import java.util.Set;
 
@@ -120,7 +122,18 @@ public final class PrismGenerator extends AbstractProcessor {
     try {
 
       var file = APContext.getBuildResource("avaje-processors.txt");
-      Files.writeString(file, "avaje-prism-core\n", StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+      var addition = new StringBuilder();
+      //if file exists, dedup and append current processor
+      if (file.toFile().exists()) {
+        var result =
+            Stream.concat(Files.lines(file), Stream.of("avaje-prism-core"))
+                .distinct()
+                .collect(joining("\n"));
+        addition.append(result);
+      } else {
+        addition.append("avaje-prism-core");
+      }
+      Files.writeString(file, addition.toString(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
     } catch (IOException e) {
       // not an issue worth failing over
     }
