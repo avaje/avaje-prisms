@@ -11,3 +11,4 @@ build/
 */bin/
 .DS_Store
 
+blackbox-test-prism/avaje-prism-core

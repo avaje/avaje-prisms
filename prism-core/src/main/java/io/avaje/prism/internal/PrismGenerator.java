@@ -78,7 +78,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
-import io.avaje.inject.generator.APContext;
 import io.avaje.spi.ServiceProvider;
 /**
  * An AnnotationProcessor for generating prisms. Do not use this class directly.
