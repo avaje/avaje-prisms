@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-prisms-parent</artifactId>
-    <version>1.27-SNAPSHOT</version>
+    <version>1.28-SNAPSHOT</version>
   </parent>
   <artifactId>avaje-prism-core</artifactId>
   <description>generator for avaje prisms</description>
@@ -17,7 +17,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-spi-service</artifactId>
-      <version>1.11</version>
+      <version>2.0</version>
     </dependency>
   </dependencies>
 </project>
