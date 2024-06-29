@@ -5,9 +5,12 @@ import static java.util.function.Predicate.not;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.Filer;
@@ -345,5 +348,30 @@ final class APContext {
             .toURL()
             .openStream();
     return new BufferedReader(new InputStreamReader(inputStream));
+  }
+
+  /**
+   * Given the relative path, gets a {@link Path} from the Maven {@code target}/Gradle {@code build} folder.
+   * @param path the relative path of the file in the target/build folder
+   *
+   * @return the file object
+   * @throws IOException if unable to retrieve the file
+   */
+  public static Path getBuildResource(String path) throws IOException {
+
+    var id = UUID.randomUUID().toString();
+    final var uri =
+        filer()
+            .createResource(StandardLocation.CLASS_OUTPUT, "", path + id)
+            .toUri()
+            .toString()
+            .replaceFirst(id, "")
+            .replaceFirst("/classes", "")
+            .replaceFirst("/classes/java/main", "");
+    var updatedPath = Path.of(URI.create(uri));
+    if (path.contains("/")) {
+      updatedPath.getParent().toFile().mkdirs();
+    }
+    return updatedPath;
   }
 }

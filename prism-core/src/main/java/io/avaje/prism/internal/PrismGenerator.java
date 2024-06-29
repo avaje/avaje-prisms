@@ -42,6 +42,7 @@ import static io.avaje.prism.internal.APContext.isAssignable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,6 +77,8 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+
+import io.avaje.inject.generator.APContext;
 import io.avaje.spi.ServiceProvider;
 /**
  * An AnnotationProcessor for generating prisms. Do not use this class directly.
@@ -113,6 +116,14 @@ public final class PrismGenerator extends AbstractProcessor {
     this.elements = env.getElementUtils();
     this.types = env.getTypeUtils();
     APContext.init(env);
+    // write a note in target so that other apts can know prisms was running
+    try {
+
+      var file = APContext.getBuildResource("avaje-processors/avaje-prism-core");
+      Files.writeString(file, "avaje-prism-core initialized");
+    } catch (IOException e) {
+      // not an issue worth failing over
+    }
   }
 
   @Override
