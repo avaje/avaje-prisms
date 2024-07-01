@@ -37,11 +37,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package io.avaje.prism.internal;
 
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.joining;
 import static io.avaje.prism.internal.APContext.isAssignable;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +54,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 import java.util.Optional;
 import java.util.Set;
 
@@ -76,6 +80,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+
 import io.avaje.spi.ServiceProvider;
 /**
  * An AnnotationProcessor for generating prisms. Do not use this class directly.
@@ -113,6 +118,25 @@ public final class PrismGenerator extends AbstractProcessor {
     this.elements = env.getElementUtils();
     this.types = env.getTypeUtils();
     APContext.init(env);
+    // write a note in target so that other apts can know prisms was running
+    try {
+
+      var file = APContext.getBuildResource("avaje-processors.txt");
+      var addition = new StringBuilder();
+      //if file exists, dedup and append current processor
+      if (file.toFile().exists()) {
+        var result =
+            Stream.concat(Files.lines(file), Stream.of("avaje-prism-core"))
+                .distinct()
+                .collect(joining("\n"));
+        addition.append(result);
+      } else {
+        addition.append("avaje-prism-core");
+      }
+      Files.writeString(file, addition.toString(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+    } catch (IOException e) {
+      // not an issue worth failing over
+    }
   }
 
   @Override
