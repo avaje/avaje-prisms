@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-prisms-parent</artifactId>
-    <version>1.28</version>
+    <version>1.29-SNAPSHOT</version>
   </parent>
   <artifactId>avaje-prism-core</artifactId>
   <description>generator for avaje prisms</description>
