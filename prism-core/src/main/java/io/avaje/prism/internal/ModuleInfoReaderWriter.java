@@ -239,7 +239,7 @@ public class ModuleInfoReaderWriter {
             + "    if (!missingImpls.isEmpty()) {\n"
             + "      var message = implementations.stream().collect(joining(\", \"));\n"
             + "\n"
-            + "      APContext.logError(\"Missing `provides %s with %s;`\", providesType, message);\n"
+            + "      APContext.logError(moduleElement, \"Missing `provides %s with %s;`\", providesType, message);\n"
             + "    }\n"
             + "  }\n"
             + "\n"
