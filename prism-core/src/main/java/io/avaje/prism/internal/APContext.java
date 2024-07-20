@@ -341,13 +341,27 @@ final class APContext {
    * @throws IOException if unable to read the module-info
    */
   public static BufferedReader getModuleInfoReader() throws IOException {
-    var inputStream =
-        filer()
-            .getResource(StandardLocation.SOURCE_PATH, "", "module-info.java")
-            .toUri()
-            .toURL()
-            .openStream();
-    return new BufferedReader(new InputStreamReader(inputStream));
+
+    // some JVM implementations do not implement SOURCE_PATH so gotta find the module path by trying
+    // to find the src folder
+    var id = UUID.randomUUID().toString();
+    var path = Path.of(filer().createResource(StandardLocation.CLASS_OUTPUT, "", id).toUri());
+
+    while (path != null && !path.resolve("src/main/java").toFile().exists()) {
+
+      path = path.getParent();
+    }
+
+    var moduleFile = path.resolve("src/main/java/module-info.java");
+    if (moduleFile.toFile().exists()) {
+      return new BufferedReader(new InputStreamReader(moduleFile.toUri().toURL().openStream()));
+    }
+
+    // if that fails try via SOURCE_PATH
+    var sourcePath =
+        Path.of(filer().getResource(StandardLocation.SOURCE_PATH, "", "module-info.java").toUri());
+
+    return new BufferedReader(new InputStreamReader(sourcePath.toUri().toURL().openStream()));
   }
 
   /**
