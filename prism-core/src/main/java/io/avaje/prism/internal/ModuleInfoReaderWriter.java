@@ -15,7 +15,6 @@ public class ModuleInfoReaderWriter {
             + "import static java.util.stream.Collectors.*;\n"
             + "\n"
             + "import java.io.*;\n"
-            + "import java.net.URI;\n"
             + "import java.util.*;\n"
             + "import java.util.regex.Matcher;\n"
             + "import java.util.regex.Pattern;\n"
