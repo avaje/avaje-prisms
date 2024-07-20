@@ -346,9 +346,9 @@ final class APContext {
     // to find the src folder
     var id = UUID.randomUUID().toString();
     var path = Path.of(filer().createResource(StandardLocation.CLASS_OUTPUT, "", id).toUri());
-
-    while (path != null && !path.resolve("src/main/java").toFile().exists()) {
-
+    var i = 0;
+    while (i < 5 && path != null && !path.resolve("src/main/java").toFile().exists()) {
+      i++;
       path = path.getParent();
     }
 
