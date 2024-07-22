@@ -58,7 +58,7 @@ final class ServiceWriter {
         String line;
         while ((line = reader.readLine()) != null) {
 
-          if (line.isBlank()) {
+          if (!line.isBlank()) {
             if (line.contains("io.avaje.prism") && !line.contains("static")) {
               logWarn(
                   module, "`requires io.avaje.prism` should be `requires static io.avaje.prism;`");
