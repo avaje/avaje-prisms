@@ -47,23 +47,28 @@ final class APContext {
     private final Elements elementUtils;
     private final Types typeUtils;
     private ModuleElement module;
+    private final boolean isTestCompilation;
 
-    public Ctx(ProcessingEnvironment processingEnv) {
+    private Ctx(ProcessingEnvironment processingEnv) {
 
       this.processingEnv = processingEnv;
       messager = processingEnv.getMessager();
       filer = processingEnv.getFiler();
       elementUtils = processingEnv.getElementUtils();
       typeUtils = processingEnv.getTypeUtils();
-    }
+      boolean test;
+      try {
+        test =
+            filer
+                .createResource(StandardLocation.CLASS_OUTPUT, "", "isTestPath")
+                .toUri()
+                .toString()
+                .contains("test-classes");
 
-    public Ctx(Messager messager, Filer filer, Elements elementUtils, Types typeUtils) {
-
-      this.processingEnv = null;
-      this.messager = messager;
-      this.filer = filer;
-      this.elementUtils = elementUtils;
-      this.typeUtils = typeUtils;
+      } catch (Exception e) {
+        test = false;
+      }
+      isTestCompilation = test;
     }
   }
 
@@ -353,7 +358,7 @@ final class APContext {
     }
 
     var moduleFile = path.resolve("src/main/java/module-info.java");
-    if (moduleFile.toFile().exists()) {
+    if (moduleFile.toFile().exists() && !isTestCompilation()) {
       return new BufferedReader(new InputStreamReader(moduleFile.toUri().toURL().openStream()));
     }
 
@@ -387,5 +392,14 @@ final class APContext {
       updatedPath.getParent().toFile().mkdirs();
     }
     return updatedPath;
+  }
+
+  /**
+   * Return true if the compiler is creating test classes.
+   *
+   * @return Whether the current apt compilation is for test-compile.
+   */
+  public static boolean isTestCompilation() {
+    return CTX.get().isTestCompilation;
   }
 }
