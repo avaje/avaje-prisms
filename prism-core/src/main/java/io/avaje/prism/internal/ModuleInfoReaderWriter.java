@@ -200,7 +200,7 @@ public class ModuleInfoReaderWriter {
             + "   * @param implementations the implementations to verify the presence of\n"
             + "   */\n"
             + "  public void validateServices(String providesType, Collection<String> implementations) {\n"
-            + "    if (buildPluginAvailable() || moduleElement.isUnnamed()) {\n"
+            + "    if (buildPluginAvailable() || moduleElement.isUnnamed() || APContext.isTestCompilation()) {\n"
             + "      return;\n"
             + "    }\n"
             + "    var implSet = new TreeSet<>(implementations);\n"
