@@ -51,14 +51,15 @@ public class APContextWriter {
         + "    }\n";
   }
 
-  public static void write(PrintWriter out, String packageName) {
+  public static void write(PrintWriter out, String packageName, boolean moduleReader) {
     out.append(
         "package "
             + packageName
             + ";\n"
             + "\n"
             + "import static java.util.function.Predicate.not;\n"
-            + "\n"+ compilerImports()
+            + "\n"
+            + compilerImports()
             + "\n"
             + "/**\n"
             + " * Utiliy Class that stores the {@link ProcessingEnvironment} and provides various helper methods\n"
@@ -80,6 +81,7 @@ public class APContextWriter {
             + "    private final Types typeUtils;\n"
             + "    private ModuleElement module;\n"
             + "    private final boolean isTestCompilation;\n"
+            + (moduleReader ? "    private ModuleInfoReader moduleReader;\n" : "")
             + "\n"
             + "    private Ctx(ProcessingEnvironment processingEnv) {\n"
             + "\n"
@@ -383,6 +385,19 @@ public class APContextWriter {
             + "    return getCtx().module;\n"
             + "  }\n"
             + "\n"
+            + (moduleReader
+                ? "  /** Retrieve the root module-info reader or null if the module could not be read */\n"
+                    + "  public static ModuleInfoReader moduleInfoReader() {\n"
+                    + "    if (getCtx().moduleReader == null) {\n"
+                    + "      try {\n"
+                    + "        getCtx().moduleReader = new ModuleInfoReader();\n"
+                    + "      } catch (Exception e) {\n"
+                    + "        // could not retrieve\n"
+                    + "      }\n"
+                    + "    }\n"
+                    + "    return getCtx().moduleReader;\n"
+                    + "  }\n\n"
+                : "")
             + "  /**\n"
             + "   * Gets a {@link BufferedReader} for the project's {@code module-info.java} source file.\n"
             + "   *\n"
@@ -450,6 +465,4 @@ public class APContextWriter {
             + "}\n"
             + "");
   }
-
-
 }

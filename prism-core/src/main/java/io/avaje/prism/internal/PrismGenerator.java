@@ -151,9 +151,7 @@ public final class PrismGenerator extends AbstractProcessor {
       APContext.clear();
       return true;
     }
-
     APContext.setProjectModuleElement(tes, renv);
-
     tes.stream()
         .map(renv::getElementsAnnotatedWith)
         .map(ElementFilter::typesIn)
@@ -200,6 +198,10 @@ public final class PrismGenerator extends AbstractProcessor {
               }
             });
 
+    var moduleReaderElements =
+        renv.getElementsAnnotatedWith(
+            elements.getTypeElement("io.avaje.prism.GenerateModuleInfoReader"));
+
     renv
         .getElementsAnnotatedWith(elements.getTypeElement("io.avaje.prism.GenerateAPContext"))
         .stream()
@@ -214,16 +216,13 @@ public final class PrismGenerator extends AbstractProcessor {
                   new PrintWriter(
                       processingEnv.getFiler().createSourceFile(prismFqn).openWriter())) {
 
-                APContextWriter.write(out, packageName);
+                APContextWriter.write(out, packageName, !moduleReaderElements.isEmpty());
               } catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
               }
             });
 
-    renv
-        .getElementsAnnotatedWith(
-            elements.getTypeElement("io.avaje.prism.GenerateModuleInfoReader"))
-        .stream()
+    moduleReaderElements.stream()
         .findFirst()
         .ifPresent(
             x -> {
