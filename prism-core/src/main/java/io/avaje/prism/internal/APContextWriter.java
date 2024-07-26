@@ -386,8 +386,8 @@ public class APContextWriter {
             + "  }\n"
             + "\n"
             + (moduleReader
-                ? "  /** Retrieve the root module-info reader or null if the module could not be read */\n"
-                    + "  public static ModuleInfoReader moduleInfoReader() {\n"
+                ? "  /** Retrieve the root module-info reader if it can be read */\n"
+                    + "  public static Optional<ModuleInfoReader> moduleInfoReader() {\n"
                     + "    if (getCtx().moduleReader == null) {\n"
                     + "      try {\n"
                     + "        getCtx().moduleReader = new ModuleInfoReader();\n"
@@ -395,7 +395,7 @@ public class APContextWriter {
                     + "        // could not retrieve\n"
                     + "      }\n"
                     + "    }\n"
-                    + "    return getCtx().moduleReader;\n"
+                    + "    return Optional.ofNullable(getCtx().moduleReader);\n"
                     + "  }\n\n"
                 : "")
             + "  /**\n"
