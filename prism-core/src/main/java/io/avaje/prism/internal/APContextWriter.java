@@ -10,10 +10,16 @@ public class APContextWriter {
   private static String compilerImports() {
 
     if (jdkVersion() >= 25 || jdkVersion() >= 23 && APContext.previewEnabled()) {
-      return "import module java.compiler;\n";
+      return "import module java.base;\n" + "import module java.compiler;\n";
     }
 
-    return "import javax.annotation.processing.*;\n"
+    return "import java.io.*;\n"
+        + "import java.net.URI;\n"
+        + "import java.nio.file.Path;\n"
+        + "import java.util.*;\n"
+        + "import java.util.stream.Stream;\n"
+        + "\n"
+        + "import javax.annotation.processing.*;\n"
         + "import javax.annotation.processing.Generated;\n"
         + "import javax.annotation.processing.Messager;\n"
         + "import javax.annotation.processing.ProcessingEnvironment;\n"
@@ -52,14 +58,7 @@ public class APContextWriter {
             + ";\n"
             + "\n"
             + "import static java.util.function.Predicate.not;\n"
-            + "\n"
-            + "import java.io.*;\n"
-            + "import java.net.URI;\n"
-            + "import java.nio.file.Path;\n"
-            + "import java.util.*;\n"
-            + "import java.util.stream.Stream;\n"
-            + "\n"
-            + compilerImports()
+            + "\n"+ compilerImports()
             + "\n"
             + "/**\n"
             + " * Utiliy Class that stores the {@link ProcessingEnvironment} and provides various helper methods\n"
