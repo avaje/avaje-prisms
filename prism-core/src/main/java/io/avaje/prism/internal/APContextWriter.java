@@ -7,6 +7,34 @@ import java.io.PrintWriter;
 public class APContextWriter {
   private APContextWriter() {}
 
+  private static String compilerImports() {
+
+    if (jdkVersion() >= 25 || jdkVersion() >= 23 && APContext.previewEnabled()) {
+      return "import module java.base;\n" + "import module java.compiler;\n";
+    }
+
+    return "import java.io.*;\n"
+        + "import java.net.URI;\n"
+        + "import java.nio.file.Path;\n"
+        + "import java.util.*;\n"
+        + "import java.util.stream.Stream;\n"
+        + "\n"
+        + "import javax.annotation.processing.*;\n"
+        + "import javax.annotation.processing.Generated;\n"
+        + "import javax.annotation.processing.Messager;\n"
+        + "import javax.annotation.processing.ProcessingEnvironment;\n"
+        + "import javax.annotation.processing.RoundEnvironment;\n"
+        + "import javax.lang.model.element.Element;\n"
+        + "import javax.lang.model.element.ModuleElement;\n"
+        + "import javax.lang.model.element.TypeElement;\n"
+        + "import javax.lang.model.type.TypeMirror;\n"
+        + "import javax.lang.model.util.Elements;\n"
+        + "import javax.lang.model.util.Types;\n"
+        + "import javax.tools.Diagnostic;\n"
+        + "import javax.tools.JavaFileObject;\n"
+        + "import javax.tools.StandardLocation;\n";
+  }
+
   private static String preview() {
     if (jdkVersion() >= 13) {
       return "    previewEnabled = processingEnv.isPreviewEnabled();\n";
@@ -23,7 +51,7 @@ public class APContextWriter {
         + "    }\n";
   }
 
-  public static void write(PrintWriter out, String packageName) {
+  public static void write(PrintWriter out, String packageName, boolean moduleReader) {
     out.append(
         "package "
             + packageName
@@ -31,26 +59,7 @@ public class APContextWriter {
             + "\n"
             + "import static java.util.function.Predicate.not;\n"
             + "\n"
-            + "import java.io.*;\n"
-            + "import java.net.URI;\n"
-            + "import java.nio.file.Path;\n"
-            + "import java.util.*;\n"
-            + "import java.util.stream.Stream;\n"
-            + "\n"
-            + "import javax.annotation.processing.Filer;\n"
-            + "import javax.annotation.processing.Generated;\n"
-            + "import javax.annotation.processing.Messager;\n"
-            + "import javax.annotation.processing.ProcessingEnvironment;\n"
-            + "import javax.annotation.processing.RoundEnvironment;\n"
-            + "import javax.lang.model.element.Element;\n"
-            + "import javax.lang.model.element.ModuleElement;\n"
-            + "import javax.lang.model.element.TypeElement;\n"
-            + "import javax.lang.model.type.TypeMirror;\n"
-            + "import javax.lang.model.util.Elements;\n"
-            + "import javax.lang.model.util.Types;\n"
-            + "import javax.tools.Diagnostic;\n"
-            + "import javax.tools.JavaFileObject;\n"
-            + "import javax.tools.StandardLocation;\n"
+            + compilerImports()
             + "\n"
             + "/**\n"
             + " * Utiliy Class that stores the {@link ProcessingEnvironment} and provides various helper methods\n"
@@ -71,7 +80,8 @@ public class APContextWriter {
             + "    private final Elements elementUtils;\n"
             + "    private final Types typeUtils;\n"
             + "    private ModuleElement module;\n"
-            + " private final boolean isTestCompilation;\n"
+            + "    private final boolean isTestCompilation;\n"
+            + (moduleReader ? "    private ModuleInfoReader moduleReader;\n" : "")
             + "\n"
             + "    private Ctx(ProcessingEnvironment processingEnv) {\n"
             + "\n"
@@ -84,7 +94,7 @@ public class APContextWriter {
             + "      try {\n"
             + "        test =\n"
             + "            filer\n"
-            + "                .createResource(StandardLocation.CLASS_OUTPUT, \"\", \"isTestPath\")\n"
+            + "                .createResource(StandardLocation.CLASS_OUTPUT, \"\", UUID.randomUUID().toString())\n"
             + "                .toUri()\n"
             + "                .toString()\n"
             + "                .contains(\"test-classes\");\n"
@@ -119,7 +129,7 @@ public class APContextWriter {
             + "   */\n"
             + "  public static void init(Ctx context, int jdkVersion, boolean preview) {\n"
             + "    CTX.set(context);\n"
-            + "    jdkVersion = jdkVersion;\n"
+            + "    APContext.jdkVersion = jdkVersion;\n"
             + "    previewEnabled = preview;\n"
             + "  }"
             + "\n"
@@ -145,7 +155,13 @@ public class APContextWriter {
             + "  public static boolean previewEnabled() {\n"
             + "    return previewEnabled;\n"
             + "  }\n"
-            + "\n"
+            + "\n  private static Ctx getCtx() {\n"
+            + "    var ctx = CTX.get();\n"
+            + "    if (ctx == null) {\n"
+            + "      throw new IllegalStateException(\"APContext has not been initialized with APContext.init\");\n"
+            + "    }\n"
+            + "    return CTX.get();\n"
+            + "  }"
             + "  /**\n"
             + "   * Prints an error at the location of the element.\n"
             + "   *\n"
@@ -267,7 +283,7 @@ public class APContextWriter {
             + "   * @return the enviroment\n"
             + "   */\n"
             + "  public static ProcessingEnvironment processingEnv() {\n"
-            + "    return CTX.get().processingEnv;\n"
+            + "    return getCtx().processingEnv;\n"
             + "  }\n"
             + "\n"
             + "  /**\n"
@@ -276,7 +292,7 @@ public class APContextWriter {
             + "   * @return the filer\n"
             + "   */\n"
             + "  public static Filer filer() {\n"
-            + "    return CTX.get().filer;\n"
+            + "    return getCtx().filer;\n"
             + "  }\n"
             + "\n"
             + "  /**\n"
@@ -285,7 +301,7 @@ public class APContextWriter {
             + "   * @return the filer\n"
             + "   */\n"
             + "  public static Elements elements() {\n"
-            + "    return CTX.get().elementUtils;\n"
+            + "    return getCtx().elementUtils;\n"
             + "  }\n"
             + "\n"
             + "  /**\n"
@@ -294,7 +310,7 @@ public class APContextWriter {
             + "   * @return the messager\n"
             + "   */\n"
             + "  public static Messager messager() {\n"
-            + "    return CTX.get().messager;\n"
+            + "    return getCtx().messager;\n"
             + "  }\n"
             + "\n"
             + "  /**\n"
@@ -303,7 +319,7 @@ public class APContextWriter {
             + "   * @return the types\n"
             + "   */\n"
             + "  public static Types types() {\n"
-            + "    return CTX.get().typeUtils;\n"
+            + "    return getCtx().typeUtils;\n"
             + "  }\n"
             + "\n"
             + "  /**\n"
@@ -347,8 +363,8 @@ public class APContextWriter {
             + "   */\n"
             + "  public static void setProjectModuleElement(\n"
             + "      Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {\n"
-            + "    if (CTX.get().module == null) {\n"
-            + "      CTX.get().module =\n"
+            + "    if (getCtx().module == null) {\n"
+            + "      getCtx().module =\n"
             + "          annotations.stream()\n"
             + "              .map(roundEnv::getElementsAnnotatedWith)\n"
             + "              .filter(not(Collection::isEmpty))\n"
@@ -366,9 +382,22 @@ public class APContextWriter {
             + "   * @return the {@link ModuleElement} associated with the current project\n"
             + "   */\n"
             + "  public static ModuleElement getProjectModuleElement() {\n"
-            + "    return CTX.get().module;\n"
+            + "    return getCtx().module;\n"
             + "  }\n"
             + "\n"
+            + (moduleReader
+                ? "  /** Retrieve the root module-info reader if it can be read */\n"
+                    + "  public static Optional<ModuleInfoReader> moduleInfoReader() {\n"
+                    + "    if (getCtx().moduleReader == null) {\n"
+                    + "      try {\n"
+                    + "        getCtx().moduleReader = new ModuleInfoReader();\n"
+                    + "      } catch (Exception e) {\n"
+                    + "        // could not retrieve\n"
+                    + "      }\n"
+                    + "    }\n"
+                    + "    return Optional.ofNullable(getCtx().moduleReader);\n"
+                    + "  }\n\n"
+                : "")
             + "  /**\n"
             + "   * Gets a {@link BufferedReader} for the project's {@code module-info.java} source file.\n"
             + "   *\n"
@@ -384,8 +413,7 @@ public class APContextWriter {
             + "    var modulePath = isTestCompilation() ? \"src/main/test\" : \"src/main/java\";\n"
             + "    // some JVM implementations do not implement SOURCE_PATH so gotta find the module path by trying\n"
             + "    // to find the src folder\n"
-            + "    var id = UUID.randomUUID().toString();\n"
-            + "    var path = Path.of(filer().createResource(StandardLocation.CLASS_OUTPUT, \"\", id).toUri());\n"
+            + "    var path = Path.of(filer().createResource(StandardLocation.CLASS_OUTPUT, \"\", UUID.randomUUID().toString()).toUri());\n"
             + "    var i = 0;\n"
             + "    while (i < 5 && path != null && !path.resolve(modulePath).toFile().exists()) {\n"
             + "      i++;\n"
@@ -432,7 +460,7 @@ public class APContextWriter {
             + "   * @return Whether the current apt compilation is for test-compile.\n"
             + "   */\n"
             + "  public static boolean isTestCompilation() {\n"
-            + "    return CTX.get().isTestCompilation;\n"
+            + "    return getCtx().isTestCompilation;\n"
             + "  }"
             + "}\n"
             + "");

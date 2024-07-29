@@ -60,7 +60,7 @@ final class APContext {
       try {
         test =
             filer
-                .createResource(StandardLocation.CLASS_OUTPUT, "", "isTestPath")
+                .createResource(StandardLocation.CLASS_OUTPUT, "", UUID.randomUUID().toString())
                 .toUri()
                 .toString()
                 .contains("test-classes");
@@ -125,6 +125,14 @@ final class APContext {
    */
   public static boolean previewEnabled() {
     return previewEnabled;
+  }
+
+  private static Ctx getCtx() {
+    var ctx = CTX.get();
+    if (ctx == null) {
+      throw new IllegalStateException("APContext.init() has not been called");
+    }
+    return CTX.get();
   }
 
   /**
@@ -233,7 +241,7 @@ final class APContext {
    * @return the enviroment
    */
   public static ProcessingEnvironment processingEnv() {
-    return CTX.get().processingEnv;
+    return getCtx().processingEnv;
   }
 
   /**
@@ -242,7 +250,7 @@ final class APContext {
    * @return the filer
    */
   public static Filer filer() {
-    return CTX.get().filer;
+    return getCtx().filer;
   }
 
   /**
@@ -251,7 +259,7 @@ final class APContext {
    * @return the filer
    */
   public static Elements elements() {
-    return CTX.get().elementUtils;
+    return getCtx().elementUtils;
   }
 
   /**
@@ -260,7 +268,7 @@ final class APContext {
    * @return the messager
    */
   public static Messager messager() {
-    return CTX.get().messager;
+    return getCtx().messager;
   }
 
   /**
@@ -269,7 +277,7 @@ final class APContext {
    * @return the types
    */
   public static Types types() {
-    return CTX.get().typeUtils;
+    return getCtx().typeUtils;
   }
 
   /**
@@ -313,8 +321,8 @@ final class APContext {
    */
   public static void setProjectModuleElement(
       Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    if (CTX.get().module == null) {
-      CTX.get().module =
+    if (getCtx().module == null) {
+      getCtx().module =
           annotations.stream()
               .map(roundEnv::getElementsAnnotatedWith)
               .filter(not(Collection::isEmpty))
@@ -332,7 +340,7 @@ final class APContext {
    * @return the {@link ModuleElement} associated with the current project
    */
   public static ModuleElement getProjectModuleElement() {
-    return CTX.get().module;
+    return getCtx().module;
   }
 
   /**
@@ -400,6 +408,6 @@ final class APContext {
    * @return Whether the current apt compilation is for test-compile.
    */
   public static boolean isTestCompilation() {
-    return CTX.get().isTestCompilation;
+    return getCtx().isTestCompilation;
   }
 }
