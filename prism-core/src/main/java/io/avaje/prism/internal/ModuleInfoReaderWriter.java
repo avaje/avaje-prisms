@@ -1,6 +1,7 @@
 package io.avaje.prism.internal;
 
 import java.io.PrintWriter;
+import java.util.regex.Pattern;
 
 public class ModuleInfoReaderWriter {
   private ModuleInfoReaderWriter() {}
@@ -39,8 +40,7 @@ public class ModuleInfoReaderWriter {
             + "  private static final String SPLIT_PATTERN = \"\\\\s*,\\\\s*\";\n"
             + "  private static final Pattern IMPORT_PATTERN = Pattern.compile(\"import\\\\s+([\\\\w.$]+);\");\n"
             + "\n"
-            + "  private static final Pattern MULTI_COMMENT_PATTERN = Pattern.compile(\"/\\\\*.*\\\\*/\");\n"
-            + "  private static final Pattern SINGLE_COMMENT_PATTERN = Pattern.compile(\"//.*\");\n"
+            + "  private static final Pattern COMMENT_PATTERN = Pattern.compile(\"(/.*)|(\\\\*.*)\");\n"
             + "\n"
             + "  private static final Pattern REQUIRES_PATTERN =\n"
             + "      Pattern.compile(\"requires\\\\s+(transitive\\\\s+)?(static\\\\s+)?([\\\\w.$]+);\");\n"
@@ -85,7 +85,7 @@ public class ModuleInfoReaderWriter {
             + "   */\n"
             + "  public ModuleInfoReader(ModuleElement moduleElement, CharSequence moduleString) {\n"
             + "    this.moduleElement = moduleElement;\n"
-            + "    var input = removeComments(moduleString);\n"
+            + "    var input = COMMENT_PATTERN.matcher(moduleString).replaceAll(\"\");\n"
             + "    Matcher importMatcher = IMPORT_PATTERN.matcher(input);\n"
             + "    Matcher requiresMatcher = REQUIRES_PATTERN.matcher(input);\n"
             + "    Matcher providesMatcher = PROVIDES_PATTERN.matcher(input);\n"
@@ -143,14 +143,6 @@ public class ModuleInfoReaderWriter {
             + "    }\n"
             + "  }\n"
             + "\n"
-            + "  private static String removeComments(CharSequence moduleString) {\n"
-            + "    Pattern singleLineCommentPattern = SINGLE_COMMENT_PATTERN;\n"
-            + "    Pattern multiLineCommentPattern = MULTI_COMMENT_PATTERN;\n"
-            + "\n"
-            + "    var result = moduleString;\n"
-            + "    result = singleLineCommentPattern.matcher(result).replaceAll(\"\");\n"
-            + "    return multiLineCommentPattern.matcher(result).replaceAll(\"\");\n"
-            + "  }\n"
             + "\n"
             + "  private String resolveImport(List<String> imports, String providedInterface) {\n"
             + "    return imports.stream()\n"
