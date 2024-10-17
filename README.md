@@ -2,7 +2,7 @@
 [![Build](https://github.com/avaje/avaje-prisms/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-prisms/actions/workflows/build.yml)
 [![JDK EA](https://github.com/avaje/avaje-prisms/actions/workflows/jdk-ea.yml/badge.svg)](https://github.com/avaje/avaje-prisms/actions/workflows/jdk-ea.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-prisms/blob/master/LICENSE)
-[![Maven Central : avaje-prisms](https://maven-badges.herokuapp.com/maven-central/io.avaje/avaje-prisms/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.avaje/avaje-prisms)
+[![Maven Central](https://img.shields.io/maven-central/v/io.avaje/avaje-prisms.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/io.avaje/avaje-prisms)
 [![javadoc](https://javadoc.io/badge2/io.avaje/avaje-prisms/javadoc.svg?color=purple)](https://javadoc.io/doc/io.avaje/avaje-prisms)
 
 # [Avaje Prisms](https://avaje.io/prisms/)
