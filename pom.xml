@@ -17,14 +17,15 @@
 	</scm>
 
 	<properties>
+    <project.build.outputTimestamp>2024-10-25T04:21:12Z</project.build.outputTimestamp>
 	  <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
 	</properties>
-  
+
 	<modules>
 	  <module>avaje-prisms</module>
 	  <module>prism-core</module>
 	</modules>
-  
+
 	<profiles>
 	  <profile>
 		<id>central</id>
@@ -39,5 +40,5 @@
 		</modules>
 	  </profile>
 	</profiles>
-  
+
 </project>
