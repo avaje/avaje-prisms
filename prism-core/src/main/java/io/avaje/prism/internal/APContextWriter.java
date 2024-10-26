@@ -100,7 +100,7 @@ public class APContextWriter {
             + "                .createResource(StandardLocation.CLASS_OUTPUT, \"\", UUID.randomUUID().toString())\n"
             + "                .toUri()\n"
             + "                .toString();\n"
-            + "        test = output.contains(\"test-classes\") || output.contains(\"test\\java\");\n"
+            + "        test = output.contains(\"test-classes\") || output.contains(\"/classes/java\");\n"
             + "\n"
             + "      } catch (Exception e) {\n"
             + "        test = false;\n"
