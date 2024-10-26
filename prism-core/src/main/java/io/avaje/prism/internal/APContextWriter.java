@@ -3,6 +3,9 @@ package io.avaje.prism.internal;
 import static io.avaje.prism.internal.APContext.jdkVersion;
 
 import java.io.PrintWriter;
+import java.util.UUID;
+
+import javax.tools.StandardLocation;
 
 public class APContextWriter {
   private APContextWriter() {}
@@ -92,12 +95,12 @@ public class APContextWriter {
             + "      typeUtils = processingEnv.getTypeUtils();\n"
             + "      boolean test;\n"
             + "      try {\n"
-            + "        test =\n"
+            + "        final var output =\n"
             + "            filer\n"
             + "                .createResource(StandardLocation.CLASS_OUTPUT, \"\", UUID.randomUUID().toString())\n"
             + "                .toUri()\n"
-            + "                .toString()\n"
-            + "                .contains(\"test-classes\");\n"
+            + "                .toString();\n"
+            + "        test = output.contains(\"test-classes\") || output.contains(\"test\\java\");\n"
             + "\n"
             + "      } catch (Exception e) {\n"
             + "        test = false;\n"
