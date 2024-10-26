@@ -464,8 +464,7 @@ public class APContextWriter {
             + "   */\n"
             + "  public static boolean isTestCompilation() {\n"
             + "    return getCtx().isTestCompilation;\n"
-            + "  }"
-            + "}\n"
-            + "");
+            + "  }\n"
+            + "}\n");
   }
 }
