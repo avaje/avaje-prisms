@@ -3,9 +3,6 @@ package io.avaje.prism.internal;
 import static io.avaje.prism.internal.APContext.jdkVersion;
 
 import java.io.PrintWriter;
-import java.util.UUID;
-
-import javax.tools.StandardLocation;
 
 public class APContextWriter {
   private APContextWriter() {}
