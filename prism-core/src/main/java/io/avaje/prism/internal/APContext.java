@@ -393,8 +393,8 @@ final class APContext {
             .toUri()
             .toString()
             .replaceFirst(id, "")
-            .replaceFirst("/classes", "")
-            .replaceFirst("/classes/java/main", "");
+            .replaceFirst("/classes/java/main", "")
+            .replaceFirst("/classes", "");
     var updatedPath = Path.of(URI.create(uri));
     if (path.contains("/")) {
       updatedPath.getParent().toFile().mkdirs();

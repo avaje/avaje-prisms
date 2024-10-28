@@ -92,12 +92,12 @@ public class APContextWriter {
             + "      typeUtils = processingEnv.getTypeUtils();\n"
             + "      boolean test;\n"
             + "      try {\n"
-            + "        test =\n"
+            + "        final var output =\n"
             + "            filer\n"
             + "                .createResource(StandardLocation.CLASS_OUTPUT, \"\", UUID.randomUUID().toString())\n"
             + "                .toUri()\n"
-            + "                .toString()\n"
-            + "                .contains(\"test-classes\");\n"
+            + "                .toString();\n"
+            + "        test = output.contains(\"test-classes\") || output.contains(\"/classes/java/test\");\n"
             + "\n"
             + "      } catch (Exception e) {\n"
             + "        test = false;\n"
@@ -447,8 +447,8 @@ public class APContextWriter {
             + "            .toUri()\n"
             + "            .toString()\n"
             + "            .replaceFirst(id, \"\")\n"
-            + "            .replaceFirst(\"/classes\", \"\")\n"
-            + "            .replaceFirst(\"/classes/java/main\", \"\");\n"
+            + "            .replaceFirst(\"/classes/java/main\", \"\")\n"
+            + "            .replaceFirst(\"/classes\", \"\");\n"
             + "    var updatedPath = Path.of(URI.create(uri));\n"
             + "    if (path.contains(\"/\")) {\n"
             + "      updatedPath.getParent().toFile().mkdirs();\n"
@@ -461,8 +461,7 @@ public class APContextWriter {
             + "   */\n"
             + "  public static boolean isTestCompilation() {\n"
             + "    return getCtx().isTestCompilation;\n"
-            + "  }"
-            + "}\n"
-            + "");
+            + "  }\n"
+            + "}\n");
   }
 }
