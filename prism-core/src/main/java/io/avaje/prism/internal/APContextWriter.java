@@ -448,6 +448,7 @@ public class APContextWriter {
             + "            .toString()\n"
             + "            .replaceFirst(id, \"\")\n"
             + "            .replaceFirst(\"/classes/java/main\", \"\")\n"
+            + "            .replaceFirst(\"/classes/java/test\", \"\")\n"
             + "            .replaceFirst(\"/classes\", \"\");\n"
             + "    var updatedPath = Path.of(URI.create(uri));\n"
             + "    if (path.contains(\"/\")) {\n"
