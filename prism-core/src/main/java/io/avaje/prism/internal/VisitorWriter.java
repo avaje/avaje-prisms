@@ -289,12 +289,8 @@ public class VisitorWriter {
             + "  @Override\n"
             + "  public StringBuilder visitError(ErrorType t, StringBuilder p) {\n"
             + "    kind = t.getKind();\n"
-            + "    var type = t.toString();\n"
-            + "    if (this.mainType == null) {\n"
-            + "      mainType = type;\n"
-            + "    }\n"
-            + "    p.append(type);"
-            + "    return p;\n"
+            + "    mainType = t.toString();\n"
+            + "    return p.append(mainType);\n"
             + "  }\n"
             + "\n"
             + "  @Override\n"
@@ -418,7 +414,7 @@ public class VisitorWriter {
             + "    if (obj == null || getClass() != obj.getClass()) return false;\n"
             + "    TypeMirrorVisitor other = (TypeMirrorVisitor) obj;\n"
             + "    return Objects.equals(fullType, other.fullType);\n"
-            + "  }"
+            + "  }\n"
             + "}");
   }
 }
