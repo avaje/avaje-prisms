@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>io.avaje</groupId>
 	<artifactId>avaje-prisms-parent</artifactId>
-	<version>1.34-SNAPSHOT</version>
+	<version>1.34</version>
 	<packaging>pom</packaging>
 	<name>avaje-prisms-parent</name>
 	<description>A modular fork of hickory</description>
@@ -17,7 +17,7 @@
 	</scm>
 
 	<properties>
-    <project.build.outputTimestamp>2024-10-25T04:21:12Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2024-11-04T02:12:40Z</project.build.outputTimestamp>
 	  <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
 	</properties>
 
