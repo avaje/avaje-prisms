@@ -1,7 +1,6 @@
 package io.avaje.prism.internal;
 
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 
 public class ModuleInfoReaderWriter {
   private ModuleInfoReaderWriter() {}
@@ -212,7 +211,7 @@ public class ModuleInfoReaderWriter {
             + "   * @param providesType the provides directive to check\n"
             + "   * @param implementations the implementations to verify the presence of\n"
             + "   */\n"
-            + "  public void validateServices(String providesType, Collection<String> implementations) {\n"
+            + "    public void validateServices(String providesType, Collection<String> implementations) {\n"
             + "    if (buildPluginAvailable() || moduleElement.isUnnamed() || APContext.isTestCompilation()) {\n"
             + "      return;\n"
             + "    }\n"
@@ -232,7 +231,7 @@ public class ModuleInfoReaderWriter {
             + "    } catch (Exception e) {\n"
             + "      // not a critical error\n"
             + "    }\n"
-            + "    final var missingImpls = implSet.stream().map(this::replace$).collect(toSet());\n"
+            + "    final var missingImpls = implSet.stream().map(this::replace$).filter(this::isSameModule).collect(toSet());\n"
             + "\n"
             + "    provides()\n"
             + "        .forEach(\n"
@@ -253,6 +252,15 @@ public class ModuleInfoReaderWriter {
             + "\n"
             + "      APContext.logError(moduleElement, \"Missing `provides %s with %s;`\", providesType, message);\n"
             + "    }\n"
+            + "  }\n"
+            + "\n"
+            + "  private boolean isSameModule(String type) {\n"
+            + "    var element = APContext.typeElement(type);\n"
+            + "    return element != null\n"
+            + "        && APContext.elements()\n"
+            + "            .getModuleOf(element)\n"
+            + "            .getSimpleName()\n"
+            + "            .contentEquals(moduleElement.getSimpleName());\n"
             + "  }\n"
             + "\n"
             + "  private static boolean buildPluginAvailable() {\n"
