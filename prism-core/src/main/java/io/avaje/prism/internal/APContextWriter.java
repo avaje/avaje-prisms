@@ -9,7 +9,7 @@ public class APContextWriter {
 
   private static String compilerImports() {
 
-    if (jdkVersion() >= 25 || jdkVersion() >= 23 && APContext.previewEnabled()) {
+    if (jdkVersion() >= 23 && APContext.previewEnabled()) {
       return "import module java.base;\n" + "import module java.compiler;\n";
     }
 
