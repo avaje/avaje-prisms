@@ -1,9 +1,25 @@
 package io.avaje.prism.internal;
 
+import static io.avaje.prism.internal.APContext.jdkVersion;
+
 import java.io.PrintWriter;
 
 public class VisitorWriter {
   private VisitorWriter() {}
+
+  private static String compilerImports() {
+
+    if (jdkVersion() >= 23 && APContext.previewEnabled()) {
+      return "import module java.base;\n" + "import module java.compiler;\n";
+    }
+
+    return "import java.util.*;\n"
+        + "\n"
+        + "import javax.annotation.processing.Generated;\n"
+        + "import javax.lang.model.element.*;\n"
+        + "import javax.lang.model.type.*;\n"
+        + "import javax.lang.model.util.AbstractTypeVisitor9;\n";
+  }
 
   public static void write(PrintWriter out, String packageName) {
 
@@ -14,27 +30,7 @@ public class VisitorWriter {
             + "\n"
             + "import static java.util.stream.Collectors.toSet;\n"
             + "\n"
-            + "import java.util.ArrayList;\n"
-            + "import java.util.HashMap;\n"
-            + "import java.util.HashSet;\n"
-            + "import java.util.LinkedHashMap;\n"
-            + "import java.util.List;\n"
-            + "import java.util.Locale;\n"
-            + "import java.util.Map;\n"
-            + "import java.util.Objects;\n"
-            + "import java.util.Set;\n"
-            + "\n"
-            + "import javax.annotation.processing.Generated;\n"
-            + "import javax.lang.model.element.AnnotationMirror;\n"
-            + "import javax.lang.model.element.Element;\n"
-            + "import javax.lang.model.element.QualifiedNameable;\n"
-            + "import javax.lang.model.element.TypeElement;\n"
-            + "import javax.lang.model.type.ArrayType;\n"
-            + "import javax.lang.model.type.DeclaredType;\n"
-            + "import javax.lang.model.type.ErrorType;\n"
-            + "import javax.lang.model.type.ExecutableType;\n"
-            + "import javax.lang.model.type.*;\n"
-            + "import javax.lang.model.util.AbstractTypeVisitor9;\n"
+            + compilerImports()
             + "\n"
             + "@Generated(\"avaje-prism-generator\")\n"
             + "class TypeMirrorVisitor extends AbstractTypeVisitor9<StringBuilder, StringBuilder>\n"
@@ -248,15 +244,17 @@ public class VisitorWriter {
             + "\n"
             + "  String fullyQualfiedName(DeclaredType t, boolean includeAnnotations) {\n"
             + "    final TypeElement element = (TypeElement) t.asElement();\n"
-            + "    final var typeUseAnnotations = t.getAnnotationMirrors();\n"
+            + "    final var directAnnotations = t.getAnnotationMirrors();\n"
             + "\n"
-            + "    if (typeUseAnnotations.isEmpty() || !includeAnnotations) {\n"
+            + "    if (directAnnotations.isEmpty() || !includeAnnotations) {\n"
             + "      return element.getQualifiedName().toString();\n"
             + "    }\n"
+            + "    final var annotations = extractAnnotations(directAnnotations);\n"
+            + "\n"
             + "    final StringBuilder sb = new StringBuilder();\n"
             + "    // if not too nested, write annotations before the fqn like @someAnnotation io.YourType\n"
             + "    if (depth < 3) {\n"
-            + "      for (final var ta : typeUseAnnotations) {\n"
+            + "      for (final var ta : annotations) {\n"
             + "        sb.append(ta.toString()).append(\" \");\n"
             + "      }\n"
             + "    }\n"
@@ -271,19 +269,44 @@ public class VisitorWriter {
             + "\n"
             + "    // if too nested, write annotations in the fqn like io.@someAnnotation YourType\n"
             + "    if (depth > 2) {\n"
-            + "      for (final var ta : typeUseAnnotations) {\n"
+            + "      for (final var ta : annotations) {\n"
             + "        sb.append(ta.toString()).append(\" \");\n"
             + "      }\n"
             + "    }\n"
+            + "    sb.append(element.getSimpleName());\n"
+            + "    return sb.toString();\n"
+            + "  }\n"
+            + "\n"
+            + "  private List<AnnotationMirror> extractAnnotations(\n"
+            + "      final List<? extends AnnotationMirror> typeUseAnnotations) {\n"
+            + "    var directAnnotations = new ArrayList<AnnotationMirror>();\n"
+            + "\n"
             + "    for (final var ta : typeUseAnnotations) {\n"
             + "\n"
             + "      final TypeElement annotation = (TypeElement) ta.getAnnotationType().asElement();\n"
+            + "      @SuppressWarnings(\"unchecked\")\n"
+            + "      List<AnnotationMirror> repeatableNested =\n"
+            + "          ta.getElementValues().entrySet().stream()\n"
+            + "              .findAny()\n"
+            + "              .filter(e -> \"value\".equals(e.getKey().getSimpleName().toString()))\n"
+            + "              .map(e -> e.getValue().getValue())\n"
+            + "              .filter(List.class::isInstance)\n"
+            + "              .map(List.class::cast)\n"
+            + "              .filter(e -> !e.isEmpty() && e.get(0) instanceof AnnotationValue)\n"
+            + "              .map(e -> ((List<AnnotationMirror>) e))\n"
+            + "              .orElse(List.of());\n"
+            + "      if (!repeatableNested.isEmpty()) {\n"
+            + "\n"
+            + "        directAnnotations.addAll(extractAnnotations(repeatableNested));\n"
+            + "        continue;\n"
+            + "      }\n"
+            + "\n"
             + "      allTypes.add(annotation.getQualifiedName().toString());\n"
             + "      annotations.add(ta);\n"
+            + "      directAnnotations.add(ta);\n"
             + "      everyAnnotation.add(ta);\n"
             + "    }\n"
-            + "    sb.append(element.getSimpleName());\n"
-            + "    return sb.toString();\n"
+            + "    return directAnnotations;\n"
             + "  }\n"
             + "\n"
             + "  @Override\n"

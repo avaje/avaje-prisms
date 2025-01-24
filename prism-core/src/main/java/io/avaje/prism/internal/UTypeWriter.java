@@ -155,7 +155,7 @@ public class UTypeWriter {
             + "  }\n\n"
             + "  /** Compare whether the current full() type is identical to the given UType's full() type */\n"
             + "  @Override\n"
-            + "  boolean equals(Object other);"
+            + "  boolean equals(Object other);\n\n"
             + "}");
   }
 }

@@ -25,5 +25,9 @@ public class UTypeTester<T extends CommonInterface & CommonInterface2> {
   List<? extends Object> extendWild;
   List<?> wild;
 
+  @NotEmpty
+  @NotEmpty
+  List<@NotBlank.List({@NotBlank, @NotBlank}) String> repeatable;
+
   void testVoid(@NotEmpty(groups = int[].class) int[] param) {}
 }
