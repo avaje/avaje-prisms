@@ -12,11 +12,9 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
-import javax.management.relation.InvalidRelationIdException;
 
 @SupportedAnnotationTypes("io.avaje.prisms.test.TestAnnotation")
 public class TestProcessor extends AbstractProcessor {
@@ -114,6 +112,13 @@ public class TestProcessor extends AbstractProcessor {
     var list = typeUseFields.get(1);
     assertThat(list.full()).isEqualTo("java.util.List<T>");
     assertThat(list.componentTypes().get(0).componentTypes().get(0).componentTypes()).hasSize(2);
+
+    final var repeatable = typeUseFields.get(5);
+    assertThat(repeatable.annotations()).hasSize(2);
+    assertThat(repeatable.param0().annotations()).hasSize(2);
+    assertThat(repeatable.full())
+        .isEqualTo(
+            "@jakarta.validation.constraints.NotEmpty @jakarta.validation.constraints.NotEmpty java.util.List<@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.NotBlank java.lang.String>");
   }
 
   private void intersectionTypes(TypeElement typeUse) {
