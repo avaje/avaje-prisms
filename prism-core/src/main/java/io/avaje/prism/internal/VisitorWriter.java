@@ -8,11 +8,9 @@ public class VisitorWriter {
   private VisitorWriter() {}
 
   private static String compilerImports() {
-
     if (jdkVersion() >= 23 && APContext.previewEnabled()) {
       return "import module java.base;\n" + "import module java.compiler;\n";
     }
-
     return "import java.util.*;\n"
         + "\n"
         + "import javax.annotation.processing.Generated;\n"
@@ -22,7 +20,6 @@ public class VisitorWriter {
   }
 
   public static void write(PrintWriter out, String packageName) {
-
     out.append(
         "package "
             + packageName
@@ -277,12 +274,10 @@ public class VisitorWriter {
             + "    return sb.toString();\n"
             + "  }\n"
             + "\n"
-            + "  private List<AnnotationMirror> extractAnnotations(\n"
-            + "      final List<? extends AnnotationMirror> typeUseAnnotations) {\n"
+            + "  private List<AnnotationMirror> extractAnnotations(final List<? extends AnnotationMirror> typeUseAnnotations) {\n"
             + "    var directAnnotations = new ArrayList<AnnotationMirror>();\n"
             + "\n"
             + "    for (final var ta : typeUseAnnotations) {\n"
-            + "\n"
             + "      final TypeElement annotation = (TypeElement) ta.getAnnotationType().asElement();\n"
             + "      @SuppressWarnings(\"unchecked\")\n"
             + "      List<AnnotationMirror> repeatableNested =\n"
@@ -296,7 +291,6 @@ public class VisitorWriter {
             + "              .map(e -> ((List<AnnotationMirror>) e))\n"
             + "              .orElse(List.of());\n"
             + "      if (!repeatableNested.isEmpty()) {\n"
-            + "\n"
             + "        directAnnotations.addAll(extractAnnotations(repeatableNested));\n"
             + "        continue;\n"
             + "      }\n"
@@ -319,11 +313,8 @@ public class VisitorWriter {
             + "  @Override\n"
             + "  public StringBuilder visitTypeVariable(TypeVariable t, StringBuilder p) {\n"
             + "    kind = t.getKind();\n"
-            + "    /*\n"
-            + "     * Types can be recursive so we have to check if we have already done this type.\n"
-            + "     */\n"
+            + "    // Types can be recursive so we have to check if we have already done this type.\n"
             + "    final String previous = typeVariables.get(t);\n"
-            + "\n"
             + "    if (previous != null) {\n"
             + "      p.append(previous);\n"
             + "      return p;\n"
@@ -331,10 +322,7 @@ public class VisitorWriter {
             + "\n"
             + "    final StringBuilder sb = new StringBuilder();\n"
             + "\n"
-            + "    /*\n"
-            + "     * We do not have to print the upper and lower bound as those are defined usually\n"
-            + "     * on the method.\n"
-            + "     */\n"
+            + "    // not printing the upper and lower bound as those are defined usually on the method\n"
             + "    if (includeAnnotations) {\n"
             + "      for (final var ta : t.getAnnotationMirrors()) {\n"
             + "        p.append(ta.toString()).append(\" \");\n"
