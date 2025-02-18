@@ -29,7 +29,7 @@ import io.avaje.prism.GeneratePrisms;
     value = io.swagger.v3.oas.annotations.info.Info.class,
     name = "INfoefPrism",
     superInterfaces = {CommonInterface.class, CommonInterface2.class})
-@GeneratePrism(io.avaje.jsonb.spi.MetaData.Factory.class)
+@GeneratePrism(io.avaje.jsonb.spi.MetaData.JsonFactory.class)
 @GeneratePrism(Target.class)
 @GeneratePrism(GeneratePrisms.class)
 @GeneratePrism(GeneratePrism.class)
