@@ -145,7 +145,7 @@ public class ModuleInfoReaderWriter {
             + "\n"
             + "  private String resolveImport(List<String> imports, String providedInterface) {\n"
             + "    return imports.stream()\n"
-            + "        .filter(s -> s.contains(providedInterface))\n"
+            + "        .filter(s -> s.contains(\".\" + providedInterface.trim()))\n"
             + "        .findFirst()\n"
             + "        .orElse(providedInterface)\n"
             + "        .replaceAll(\"\\\\s\", \"\");\n"
