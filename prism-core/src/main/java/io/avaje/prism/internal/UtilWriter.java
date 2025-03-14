@@ -113,7 +113,7 @@ public class UtilWriter {
             + "   */\n"
             + "  public static String trimAnnotations(String input) {\n"
             + "    input = COMMA_PATTERN.matcher(input).replaceAll(\",\");\n"
-            + "    return cutAnnotations(input);\n"
+            + "    return cutAnnotations(PARENTHESIS_CONTENT.matcher(input).replaceAll(\"\"));\n"
             + "  }\n"
             + "\n"
             + "  private static String cutAnnotations(String input) {\n"
