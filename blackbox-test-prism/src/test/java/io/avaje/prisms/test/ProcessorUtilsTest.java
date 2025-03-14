@@ -8,6 +8,10 @@ class ProcessorUtilsTest {
 
   @Test
   void trimmedAnnotation() {
+    assertEquals(
+        "java.lang.String",
+        ProcessorUtils.trimAnnotations(
+            "@io.avaje.validation.constraints.Length(min = 5) java.lang.String"));
 
     assertEquals(
         "java.ProcessorUtils.Map<java.lang.String,java.lang.String>",
