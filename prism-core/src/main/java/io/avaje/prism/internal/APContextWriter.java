@@ -116,6 +116,11 @@ public class APContextWriter {
             + "  public static void init(ProcessingEnvironment processingEnv) {\n"
             + "    CTX.set(new Ctx(processingEnv));\n"
             + "    jdkVersion = processingEnv.getSourceVersion().ordinal();\n"
+            + "    if (jdkVersion < 11) {\n"
+            + "      logError(\n"
+            + "          \"Java release version is %s, please set javac source/release to a higher version\",\n"
+            + "          jdkVersion);\n"
+            + "    }\n"
             + preview()
             + "  }\n"
             + "\n"
