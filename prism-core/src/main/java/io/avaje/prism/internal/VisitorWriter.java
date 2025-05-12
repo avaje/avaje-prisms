@@ -8,7 +8,7 @@ public class VisitorWriter {
   private VisitorWriter() {}
 
   private static String compilerImports() {
-    if (jdkVersion() >= 23 && APContext.previewEnabled()) {
+    if (jdkVersion() >= 25) {
       return "import module java.base;\n" + "import module java.compiler;\n";
     }
     return "import java.util.*;\n"
