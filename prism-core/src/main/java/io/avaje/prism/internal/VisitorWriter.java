@@ -8,8 +8,11 @@ public class VisitorWriter {
   private VisitorWriter() {}
 
   private static String compilerImports() {
-    if (jdkVersion() >= 23 && APContext.previewEnabled()) {
-      return "import module java.base;\n" + "import module java.compiler;\n";
+    if (jdkVersion() >= 25) {
+      return "import module java.base;\n"
+          + "import module java.compiler;\n"
+          + "import javax.lang.model.element.AnnotationValue;\n"
+          + "import javax.lang.model.type.*;";
     }
     return "import java.util.*;\n"
         + "\n"
