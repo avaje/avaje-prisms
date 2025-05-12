@@ -9,7 +9,9 @@ public class VisitorWriter {
 
   private static String compilerImports() {
     if (jdkVersion() >= 25) {
-      return "import module java.base;\n" + "import module java.compiler;\n";
+      return "import module java.base;\n"
+          + "import module java.compiler;\n"
+          + "import javax.lang.model.type.TypeVariable;";
     }
     return "import java.util.*;\n"
         + "\n"
