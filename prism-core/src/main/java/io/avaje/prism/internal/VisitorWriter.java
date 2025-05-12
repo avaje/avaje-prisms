@@ -11,6 +11,7 @@ public class VisitorWriter {
     if (jdkVersion() >= 25) {
       return "import module java.base;\n"
           + "import module java.compiler;\n"
+          + "import javax.lang.model.element.AnnotationValue;\n"
           + "import javax.lang.model.type.*;";
     }
     return "import java.util.*;\n"
