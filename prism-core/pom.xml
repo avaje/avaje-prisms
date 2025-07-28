@@ -6,6 +6,7 @@
     <artifactId>avaje-prisms-parent</artifactId>
     <version>1.43</version>
   </parent>
+	<name>avaje-prisms-core</name>
   <artifactId>avaje-prism-core</artifactId>
   <description>generator for avaje prisms</description>
   <scm>
