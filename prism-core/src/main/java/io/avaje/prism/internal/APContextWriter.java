@@ -62,7 +62,7 @@ public class APContextWriter {
             + compilerImports()
             + "\n"
             + "/**\n"
-            + " * Utiliy Class that stores the {@link ProcessingEnvironment} and provides various helper methods\n"
+            + " * Utility class that stores the {@link ProcessingEnvironment} and provides various helper methods.\n"
             + " */\n"
             + "@Generated(\"avaje-prism-generator\")\n"
             + "public final class APContext {\n"
