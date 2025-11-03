@@ -374,7 +374,11 @@ final class APContext {
     var sourcePath =
         Path.of(filer().getResource(StandardLocation.SOURCE_PATH, "", "module-info.java").toUri());
 
-    return new BufferedReader(new InputStreamReader(sourcePath.toUri().toURL().openStream()));
+    if (sourcePath.toFile().exists()) {
+      return new BufferedReader(new InputStreamReader(sourcePath.toUri().toURL().openStream()));
+    }
+
+    return new BufferedReader(new InputStreamReader(Path.of("module-info.java").toUri().toURL().openStream()));
   }
 
   /**
