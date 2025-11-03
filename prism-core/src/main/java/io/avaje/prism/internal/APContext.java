@@ -353,20 +353,20 @@ final class APContext {
    * @return
    * @throws IOException if unable to read the module-info
    */
-  public static BufferedReader getModuleInfoReader() throws IOException {
+ public static BufferedReader getModuleInfoReader() throws IOException {
 
+    var modulePath = isTestCompilation() ? "src/main/test" : "src/main/java";
     // some JVM implementations do not implement SOURCE_PATH so gotta find the module path by trying
     // to find the src folder
-    var id = UUID.randomUUID().toString();
-    var path = Path.of(filer().createResource(StandardLocation.CLASS_OUTPUT, "", id).toUri());
+    var path = Path.of(filer().createResource(StandardLocation.CLASS_OUTPUT, "", UUID.randomUUID().toString()).toUri());
     var i = 0;
-    while (i < 5 && path != null && !path.resolve("src/main/java").toFile().exists()) {
+    while (i < 5 && path != null && !path.resolve(modulePath).toFile().exists()) {
       i++;
       path = path.getParent();
     }
 
-    var moduleFile = path.resolve("src/main/java/module-info.java");
-    if (moduleFile.toFile().exists() && !isTestCompilation()) {
+    var moduleFile = path.resolve(modulePath + "/module-info.java");
+    if (moduleFile.toFile().exists()) {
       return new BufferedReader(new InputStreamReader(moduleFile.toUri().toURL().openStream()));
     }
 
@@ -374,7 +374,11 @@ final class APContext {
     var sourcePath =
         Path.of(filer().getResource(StandardLocation.SOURCE_PATH, "", "module-info.java").toUri());
 
-    return new BufferedReader(new InputStreamReader(sourcePath.toUri().toURL().openStream()));
+    if (sourcePath.toFile().exists()) {
+      return new BufferedReader(new InputStreamReader(sourcePath.toUri().toURL().openStream()));
+    }
+
+    return new BufferedReader(new InputStreamReader(Path.of("module-info.java").toUri().toURL().openStream()));
   }
 
   /**
@@ -394,6 +398,8 @@ final class APContext {
             .toString()
             .replaceFirst(id, "")
             .replaceFirst("/classes/java/main", "")
+            .replaceFirst("/classes/java/test", "")
+            .replaceFirst("/test-classes", "")
             .replaceFirst("/classes", "");
     var updatedPath = Path.of(URI.create(uri));
     if (path.contains("/")) {

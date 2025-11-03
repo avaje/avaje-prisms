@@ -278,6 +278,12 @@ public final class PrismGenerator extends AbstractProcessor {
     if ("unnamed package".equals(packageName)) {
       packageName = "";
     }
+    if (ann.value().getKind() == TypeKind.ERROR) {
+      processingEnv
+          .getMessager()
+          .printMessage(Diagnostic.Kind.ERROR, "Annotation Type doesn't exist", e, ann.mirror);
+      return;
+    }
     final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
     if (generated.containsKey(prismFqn)) {
       // if same value dont need to generate, if different then error
