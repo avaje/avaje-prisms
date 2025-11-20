@@ -85,6 +85,7 @@ public class ModuleInfoReaderWriter {
             + "   */\n"
             + "  public ModuleInfoReader(ModuleElement moduleElement, CharSequence moduleString) {\n"
             + "    this.moduleElement = moduleElement;\n"
+            + "    if(moduleElement.isUnnamed()) return;\n"
             + "    var input = COMMENT_PATTERN.matcher(moduleString).replaceAll(\"\");\n"
             + "    Matcher importMatcher = IMPORT_PATTERN.matcher(input);\n"
             + "    Matcher requiresMatcher = REQUIRES_PATTERN.matcher(input);\n"
