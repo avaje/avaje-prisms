@@ -163,7 +163,7 @@ public class ModuleInfoReaderWriter {
             + "    }\n"
             + "    var surfaceCheck =\n"
             + "        requires.stream()\n"
-            + "            .filter(r -> !r.isStatic)\n"
+            + "            .filter(r -> !r.isStatic && r.dependency != null)\n"
             + "            .anyMatch(r -> r.dependency.getQualifiedName().contentEquals(moduleName));\n"
             + "\n"
             + "    if (surfaceCheck) {\n"
