@@ -246,7 +246,7 @@ public class UtilWriter {
             + "    if (p == -1) {\n"
             + "      return fullResult;\n"
             + "    }\n"
-            + "    return fullResult.substring(0, p);\n"
+            + "    return fullResult.substring(0, p).replace('/', '.');\n"
             + "  }\n"
             + "}\n");
   }
