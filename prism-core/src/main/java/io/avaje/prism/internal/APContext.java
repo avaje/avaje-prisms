@@ -404,6 +404,8 @@ final class APContext {
             .toString()
             .replaceFirst(id, "")
             .replaceFirst("/classes/java/main", "")
+            .replaceFirst("/classes/java/test", "")
+            .replaceFirst("/test-classes", "")
             .replaceFirst("/classes", "");
     var updatedPath = Path.of(URI.create(uri));
     if (path.contains("/")) {
