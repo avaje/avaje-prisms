@@ -353,12 +353,16 @@ final class APContext {
    * @return
    * @throws IOException if unable to read the module-info
    */
- public static BufferedReader getModuleInfoReader() throws IOException {
+  public static BufferedReader getModuleInfoReader() throws IOException {
 
     var modulePath = isTestCompilation() ? "src/main/test" : "src/main/java";
     // some JVM implementations do not implement SOURCE_PATH so gotta find the module path by trying
     // to find the src folder
-    var path = Path.of(filer().createResource(StandardLocation.CLASS_OUTPUT, "", UUID.randomUUID().toString()).toUri());
+    var path =
+        Path.of(
+            filer()
+                .createResource(StandardLocation.CLASS_OUTPUT, "", UUID.randomUUID().toString())
+                .toUri());
     var i = 0;
     while (i < 5 && path != null && !path.resolve(modulePath).toFile().exists()) {
       i++;
@@ -370,15 +374,17 @@ final class APContext {
       return new BufferedReader(new InputStreamReader(moduleFile.toUri().toURL().openStream()));
     }
 
+    // if that fails try same directory
+    moduleFile = Path.of("module-info.java");
+    if (moduleFile.toFile().exists()) {
+      return new BufferedReader(new InputStreamReader(moduleFile.toUri().toURL().openStream()));
+    }
+
     // if that fails try via SOURCE_PATH
     var sourcePath =
         Path.of(filer().getResource(StandardLocation.SOURCE_PATH, "", "module-info.java").toUri());
 
-    if (sourcePath.toFile().exists()) {
-      return new BufferedReader(new InputStreamReader(sourcePath.toUri().toURL().openStream()));
-    }
-
-    return new BufferedReader(new InputStreamReader(Path.of("module-info.java").toUri().toURL().openStream()));
+    return new BufferedReader(new InputStreamReader(sourcePath.toUri().toURL().openStream()));
   }
 
   /**
