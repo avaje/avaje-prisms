@@ -198,37 +198,28 @@ public final class PrismGenerator extends AbstractProcessor {
               }
             });
 
-    var moduleReaderElements =
-        renv.getElementsAnnotatedWith(
-            elements.getTypeElement("io.avaje.prism.GenerateModuleInfoReader"));
-
     renv
         .getElementsAnnotatedWith(elements.getTypeElement("io.avaje.prism.GenerateAPContext"))
         .stream()
         .findFirst()
         .ifPresent(
             x -> {
-              final var packageName = getPackageName(x);
-              final var name = "APContext";
-              final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
+              var packageName = getPackageName(x);
+              var name = "APContext";
+              String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
 
               try (var out =
                   new PrintWriter(
                       processingEnv.getFiler().createSourceFile(prismFqn).openWriter())) {
 
-                APContextWriter.write(out, packageName, !moduleReaderElements.isEmpty());
+                APContextWriter.write(out, packageName);
               } catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
               }
-            });
 
-    moduleReaderElements.stream()
-        .findFirst()
-        .ifPresent(
-            x -> {
-              final var packageName = getPackageName(x);
-              final var name = "ModuleInfoReader";
-              final String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
+              packageName = getPackageName(x);
+              name = "ModuleInfoReader";
+              prismFqn = "".equals(packageName) ? name : packageName + "." + name;
 
               try (var out =
                   new PrintWriter(
