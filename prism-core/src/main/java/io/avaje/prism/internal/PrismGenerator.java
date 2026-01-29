@@ -75,7 +75,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -520,8 +519,6 @@ public final class PrismGenerator extends AbstractProcessor {
   private PrismWriter getWriter(
       ExecutableElement m, Map<DeclaredType, String> otherPrisms) {
 
-    final WildcardType q = types.getWildcardType(null, null);
-    final TypeMirror enumType = types.getDeclaredType(elements.getTypeElement("java.lang.Enum"), q);
     TypeMirror typem = m.getReturnType();
     PrismWriter result = null;
     if (typem.getKind() == TypeKind.ARRAY) {
@@ -545,11 +542,6 @@ public final class PrismGenerator extends AbstractProcessor {
         // class<? ...>
         result.setMirrorType("TypeMirror");
         result.setPrismType("TypeMirror");
-      } else if (types.isSubtype(type, enumType)) {
-        // Enum
-        result.setMirrorType("VariableElement");
-        result.setPrismType("String");
-        result.setM2pFormat("%s.getSimpleName().toString()");
       } else if (types.isSubtype(
           type, elements.getTypeElement("java.lang.annotation.Annotation").asType())) {
         result.setMirrorType("AnnotationMirror");
@@ -575,7 +567,10 @@ public final class PrismGenerator extends AbstractProcessor {
           }
         }
       } else {
-        APContext.logNote("Unprocessed type" + type);
+        // Must be an Enum
+        result.setMirrorType("VariableElement");
+        result.setPrismType("String");
+        result.setM2pFormat("%s.getSimpleName().toString()");
       }
     }
     return result;
