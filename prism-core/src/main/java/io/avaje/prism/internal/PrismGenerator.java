@@ -166,14 +166,8 @@ public final class PrismGenerator extends AbstractProcessor {
 
     final TypeElement a = elements.getTypeElement("io.avaje.prism.GeneratePrism");
     final TypeElement as = elements.getTypeElement("io.avaje.prism.GeneratePrisms");
-    Stream.concat(
-            renv
-                .getElementsAnnotatedWith(elements.getTypeElement("io.avaje.prism.GenerateUtils"))
-                .stream(),
-            renv
-                .getElementsAnnotatedWith(
-                    elements.getTypeElement("io.avaje.prism.GenerateAPContext"))
-                .stream())
+
+    renv.getElementsAnnotatedWith(elements.getTypeElement("io.avaje.prism.GenerateUtils")).stream()
         .findFirst()
         .ifPresent(
             x -> {
@@ -201,6 +195,20 @@ public final class PrismGenerator extends AbstractProcessor {
               } catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
               }
+            });
+
+    Stream.concat(
+            renv
+                .getElementsAnnotatedWith(elements.getTypeElement("io.avaje.prism.GenerateUtils"))
+                .stream(),
+            renv
+                .getElementsAnnotatedWith(
+                    elements.getTypeElement("io.avaje.prism.GenerateAPContext"))
+                .stream())
+        .findFirst()
+        .ifPresent(
+            x -> {
+              var packageName = getPackageName(x);
               var name = "APContext";
               String prismFqn = "".equals(packageName) ? name : packageName + "." + name;
 
