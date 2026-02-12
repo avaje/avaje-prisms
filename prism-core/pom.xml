@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-prisms-parent</artifactId>
-    <version>2.1-RC1</version>
+    <version>2.1-RC2</version>
   </parent>
 	<name>avaje-prisms-core</name>
   <artifactId>avaje-prism-core</artifactId>
