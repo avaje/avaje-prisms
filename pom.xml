@@ -42,7 +42,7 @@
 	  <profile>
 		<id>default</id>
 		<activation>
-		  <activeByDefault>true</activeByDefault>
+		  <jdk>[17,)</jdk>
 		</activation>
 		<modules>
 		  <module>blackbox-test-prism</module>
