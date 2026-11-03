@@ -57,7 +57,6 @@ public class ModuleInfoReaderWriter {
             + "   * Parse a module-info and create a new instance\n"
             + "   *\n"
             + "   * @param moduleElement the element representing the root module\n"
-            + "   * @param moduleString a string containing the contents of the module-info.java\n"
             + "   */\n"
             + "  public ModuleInfoReader(ModuleElement moduleElement) {\n"
             + "    this.moduleElement = moduleElement;\n"
